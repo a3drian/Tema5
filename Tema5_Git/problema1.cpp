@@ -112,19 +112,6 @@ Nod * Arbore_Caut::maxim(Nod * root) {
 		std::cout << "Nodul maxim este " << temp->info << ".\n";
 		return temp;
 	}
-
-	/*while (temp->right != nullptr) {
-		temp = temp->right;
-	}
-
-	if (temp == nullptr) {
-		
-	} else {
-		if (temp->info > root->info) {
-			std::cout << "Nodul maxim este " << temp->info << " .\n";
-			return temp;
-		}
-	}*/
 	
 }
 
