@@ -3,7 +3,6 @@
 #include <vector>
 
 #define sout std::cout<<"\n"
-#define getch system("pause")
 #define type int
 
 //template <class T>
@@ -71,17 +70,26 @@ void Arbore_Caut::insert(Nod * element) {
 }
 
 Nod * Arbore_Caut::search(int key) {
-	Nod * leaf = new Nod(key);
 
 	Nod * temp = this->root;
 
-	while (temp != NULL) {
-		if (temp->info < leaf->info) {
-
+	while (temp != nullptr) {
+		if (temp->info == key) {
+			std::cout << key << " se afla in arbore si este fiul lui " <<
+				((temp->parent) ? temp->parent->info : temp->info) << ".";
+			return temp;
+		}
+		if (temp->info < key) {
+			temp = temp->right;
+		} else {
+			temp = temp->left;
 		}
 	}
 
-	return leaf;
+	if (temp == nullptr) {
+		std::cout << key << " nu se afla in arbore.";
+		return nullptr;
+	}
 }
 
 void printBT(const std::string & prefix, Nod * nod, bool isLeft) {
@@ -146,7 +154,12 @@ int main() {
 	std::string prefix = "";
 	printBT(prefix, copac.root, false);
 
+	int x;
+	std::cout << "Pe cine: ";
+	std::cin >> x;
+	copac.search(x);
+
 	sout;
-	getch;
+	system("pause");
 	return 0;
 }
