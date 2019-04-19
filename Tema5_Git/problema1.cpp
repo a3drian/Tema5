@@ -121,8 +121,6 @@ int main() {
 	Arbore_Caut copac = Arbore_Caut();
 
 	int dim;
-	//std::cout << "Noduri: ";
-	//std::cin >> dim;
 
 	std::ifstream f("problema1/noduri.in");
 
