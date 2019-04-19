@@ -37,7 +37,8 @@ struct Arbore_Caut {
 	}
 
 	void insert(Nod *);
-	Nod * search(int key);
+	Nod * search(int);
+	Nod * maxim(Nod *);
 	void print(Nod *);
 	void construct(std::vector<Nod*>);
 };
@@ -92,6 +93,16 @@ Nod * Arbore_Caut::search(int key) {
 	}
 }
 
+Nod * Arbore_Caut::maxim(Nod * root) {
+	//consideram nodul primit ca o radacina
+}
+
+void Arbore_Caut::construct(std::vector<Nod*> noduri) {
+	for (int i = 0; i < noduri.size(); i++) {
+		this->insert(noduri[i]);
+	}
+}
+
 void printBT(const std::string & prefix, Nod * nod, bool isLeft) {
 	if (nod != NULL)
 	{
@@ -107,12 +118,6 @@ void printBT(const std::string & prefix, Nod * nod, bool isLeft) {
 		// enter the next tree level - left and right branch
 		printBT(prefix + (isLeft ? "|   " : "    "), nod->left, true);
 		printBT(prefix + (isLeft ? "|   " : "    "), nod->right, false);
-	}
-}
-
-void Arbore_Caut::construct(std::vector<Nod*> noduri) {
-	for (int i = 0; i < noduri.size(); i++) {
-		this->insert(noduri[i]);
 	}
 }
 
