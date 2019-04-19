@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 
 #define sout std::cout<<"\n"
@@ -8,13 +9,13 @@
 //template <class T>
 struct Nod {
 
-	int key;
+	int info;
 	Nod * left;
 	Nod * right;
 	Nod * parent;
 
 	Nod(int key) {
-		this->key = key;
+		this->info = key;
 		this->left = NULL;
 		this->right = NULL;
 		this->parent = NULL;
@@ -37,6 +38,7 @@ struct Arbore_Caut {
 	}
 
 	void insert(Nod *);
+	Nod * search(int key);
 	void print(Nod *);
 	void construct(std::vector<Nod*>);
 };
@@ -47,7 +49,7 @@ void Arbore_Caut::insert(Nod * element) {
 
 	while (x != NULL) {
 		y = x;
-		if (element->key < x->key) {
+		if (element->info < x->info) {
 			x = x->left;
 		} else {
 			x = x->right;
@@ -59,7 +61,7 @@ void Arbore_Caut::insert(Nod * element) {
 	if (y == NULL) {
 		this->root = element;
 	} else {
-		if (element->key < y->key) {
+		if (element->info < y->info) {
 			y->left = element;
 		} else {
 			y->right = element;
@@ -68,17 +70,31 @@ void Arbore_Caut::insert(Nod * element) {
 
 }
 
+Nod * Arbore_Caut::search(int key) {
+	Nod * leaf = new Nod(key);
+
+	Nod * temp = this->root;
+
+	while (temp != NULL) {
+		if (temp->info < leaf->info) {
+
+		}
+	}
+
+	return leaf;
+}
+
 void printBT(const std::string & prefix, Nod * nod, bool isLeft) {
-	if (nod != nullptr)
+	if (nod != NULL)
 	{
-		for (int i = 0; i < prefix.size(); i++) {
+		for (int i = 0; i < prefix.length(); i++) {
 			std::cout << prefix[i];
 		}
 
-		std::cout << (isLeft ? "s" : "d");
+		std::cout << (isLeft ? "st--" : "dr--");
 
 		// print the value of the node
-		std::cout << nod->key << std::endl;
+		std::cout << nod->info << std::endl;
 
 		// enter the next tree level - left and right branch
 		printBT(prefix + (isLeft ? "|   " : "    "), nod->left, true);
@@ -98,17 +114,30 @@ int main() {
 	//Nod * leaf = new Nod(14);
 
 	int dim;
-	std::cin >> dim;
+	//std::cout << "Noduri: ";
+	//std::cin >> dim;
 
+	std::ifstream f("problema1/noduri.in");
+
+	f >> dim;
 	std::vector<Nod*> listaNoduri(dim);
 
 	for (int i = 0; i < dim; i++) {
 		int valoare;
-		std::cout << "val: ";
-		std::cin >> valoare;
+		f >> valoare;
 		Nod * leaf = new Nod(valoare);
 		listaNoduri[i] = leaf;
 	}
+
+	f.close();
+
+	//for (int i = 0; i < dim; i++) {
+	//	int valoare;
+	//	std::cout << "val: ";
+	//	std::cin >> valoare;
+	//	Nod * leaf = new Nod(valoare);
+	//	listaNoduri[i] = leaf;
+	//}
 
 	copac.construct(listaNoduri);
 
