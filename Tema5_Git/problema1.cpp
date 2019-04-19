@@ -77,7 +77,7 @@ Nod * Arbore_Caut::search(int key) {
 	while (temp != nullptr) {
 		if (temp->info == key) {
 			std::cout << key << " se afla in arbore si este fiul lui " <<
-				((temp->parent) ? temp->parent->info : temp->info) << ".";
+				((temp->parent) ? temp->parent->info : temp->info) << ".\n";
 			return temp;
 		}
 		if (temp->info < key) {
@@ -95,6 +95,37 @@ Nod * Arbore_Caut::search(int key) {
 
 Nod * Arbore_Caut::maxim(Nod * root) {
 	//consideram nodul primit ca o radacina
+	Nod * temp = this->search(root->info);
+
+	if (temp == nullptr) {
+		std::cout << root->info << " nu se afla in arbore.";
+		return nullptr;
+	}
+
+	if (temp->right == nullptr) {
+		std::cout << "Nodul " << root->info << " primit ca parametru este maximul din sub-arbore.\n";
+		return root;
+	} else {
+		while (temp->right != nullptr) {
+			temp = temp->right;
+		}
+		std::cout << "Nodul maxim este " << temp->info << ".\n";
+		return temp;
+	}
+
+	/*while (temp->right != nullptr) {
+		temp = temp->right;
+	}
+
+	if (temp == nullptr) {
+		
+	} else {
+		if (temp->info > root->info) {
+			std::cout << "Nodul maxim este " << temp->info << " .\n";
+			return temp;
+		}
+	}*/
+	
 }
 
 void Arbore_Caut::construct(std::vector<Nod*> noduri) {
@@ -150,6 +181,9 @@ int main() {
 	std::cout << "Pe cine: ";
 	std::cin >> x;
 	copac.search(x);
+
+	Nod * leaf = new Nod(x);
+	copac.maxim(leaf);
 
 	sout;
 	system("pause");
