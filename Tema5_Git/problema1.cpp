@@ -119,7 +119,6 @@ void Arbore_Caut::construct(std::vector<Nod*> noduri) {
 int main() {
 
 	Arbore_Caut copac = Arbore_Caut();
-	//Nod * leaf = new Nod(14);
 
 	int dim;
 	//std::cout << "Noduri: ";
@@ -139,17 +138,7 @@ int main() {
 
 	f.close();
 
-	//for (int i = 0; i < dim; i++) {
-	//	int valoare;
-	//	std::cout << "val: ";
-	//	std::cin >> valoare;
-	//	Nod * leaf = new Nod(valoare);
-	//	listaNoduri[i] = leaf;
-	//}
-
 	copac.construct(listaNoduri);
-
-	//copac.print(copac.root);
 
 	std::string prefix = "";
 	printBT(prefix, copac.root, false);
