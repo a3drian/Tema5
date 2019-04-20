@@ -118,6 +118,23 @@ Nod * Arbore_Caut::maxim(Nod * root) {
 
 Nod * Arbore_Caut::minim(Nod * root) {
 	//consideram nodul primit ca o radacina
+	Nod * temp = this->search(root->info);
+
+	if (temp == nullptr) {
+		std::cout << root->info << " nu se afla in arbore.";
+		return nullptr;
+	}
+
+	if (temp->left == nullptr) {
+		std::cout << "Nodul " << root->info << " primit ca parametru este minimul din sub-arbore.\n";
+		return root;
+	} else {
+		while (temp->left != nullptr) {
+			temp = temp->left;
+		}
+		std::cout << "Nodul minim este " << temp->info << ".\n";
+		return temp;
+	}
 }
 
 void Arbore_Caut::construct(std::vector<Nod*> noduri) {
@@ -176,6 +193,8 @@ int main() {
 
 	Nod * leaf = new Nod(x);
 	copac.maxim(leaf);
+
+	copac.minim(leaf);
 
 	sout;
 	system("pause");
