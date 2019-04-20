@@ -39,6 +39,7 @@ struct Arbore_Caut {
 	void insert(Nod *);
 	Nod * search(int);
 	Nod * maxim(Nod *);
+	Nod * minim(Nod *);
 	void print(Nod *);
 	void construct(std::vector<Nod*>);
 };
