@@ -116,6 +116,10 @@ Nod * Arbore_Caut::maxim(Nod * root) {
 	
 }
 
+Nod * Arbore_Caut::minim(Nod * root) {
+	//consideram nodul primit ca o radacina
+}
+
 void Arbore_Caut::construct(std::vector<Nod*> noduri) {
 	for (int i = 0; i < noduri.size(); i++) {
 		this->insert(noduri[i]);
