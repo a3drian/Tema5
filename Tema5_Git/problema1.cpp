@@ -138,6 +138,36 @@ Nod * Arbore_Caut::minim(Nod * root) {
 	}
 }
 
+bool Arbore_Caut::delete_element(Nod * node) {
+	if (node == nullptr) {
+		std::cout << "Nodul nu exista in arbore.\n";
+		return false;
+	}
+
+	if (node->isLeaf()) { //daca e frunza, putem sterge direct dupa ce aflam pe ce parte a parintelui este
+		std::cout << "FRUNZA\n";
+		if (node->parent->right == node) {
+			node->parent->right = nullptr;
+			delete node;
+			return true;
+		}
+
+		if (node->parent->left == node) {
+			node->parent->left = nullptr;
+			delete node;
+			return true;
+		}
+	}/* else {
+		std::cout << "NU E FRUNZA\n";
+		if (node->parent->left == node) {
+			node->parent->left = node->left;
+			node->left->parent = node->parent;
+			delete node;
+			return true;
+		}
+	}*/
+}
+
 void Arbore_Caut::construct(std::vector<Nod*> noduri) {
 	for (int i = 0; i < noduri.size(); i++) {
 		this->insert(noduri[i]);
@@ -190,12 +220,18 @@ int main() {
 	int x;
 	std::cout << "Pe cine: ";
 	std::cin >> x;
-	copac.search(x);
+	//copac.search(x);
 
-	Nod * leaf = new Nod(x);
-	copac.maxim(leaf);
+	//Nod * leaf = new Nod(x);
+	//copac.maxim(leaf);
 
-	copac.minim(leaf);
+	//copac.minim(leaf);
+
+	Nod * deSters = copac.search(10);
+	copac.delete_element(deSters);
+
+	prefix = "";
+	printBT(prefix, copac.root, false);
 
 	sout;
 	system("pause");
