@@ -15,18 +15,62 @@ int main() {
 
 	printTree(copac);
 
-	int x;
-	std::cout << "Pe cine stergem: ";
-	std::cin >> x;
-	//copac.search(x);
+	while (true) {
+		menuText();
 
-	//Nod * leaf = new Nod(x);
-	//copac.maxim(leaf);
+		unsigned int comanda;
+		log(">");
+		std::cin >> comanda;
 
-	//copac.minim(leaf);
+		if (comanda == 0) {
+			break;
+		}
 
-	Nod * deSters = copac.search(10);
-	copac.delete_element(deSters);
+		switch (comanda) {
+			case 1:
+				{
+					logn("1. Cauta");
+					cauta(copac);
+					sout;
+					break;
+				}
+			case 2:
+				{
+					logn("2. Sterge");
+					sterge(copac);
+					printTree(copac);
+					break;
+				}
+			case 3:
+				{
+					logn("3. Element minim");
+					elemMin(copac);
+					sout;
+					break;
+				}
+			case 4:
+				{
+					logn("4. Element maxim");
+					elemMax(copac);
+					sout;
+					break;
+				}
+			case 5:
+				{
+					logn("5. Succesor");
+					succes(copac);
+					sout;
+					break;
+				}
+			case 6:
+				{
+					logn("6. Predecesor");
+					predec(copac);
+					sout;
+					break;
+				}
+		}
+	}
 
 	printTree(copac);
 

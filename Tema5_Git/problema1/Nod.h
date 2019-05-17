@@ -11,7 +11,7 @@ struct Nod {
 	Nod * right;
 	Nod * parent;
 
-	Nod(int key) {
+	Nod(int key = 0) {
 		this->info = key;
 		this->left = nullptr;
 		this->right = nullptr;
@@ -23,6 +23,10 @@ struct Nod {
 			return true;
 		}
 		return false;
+	}
+
+	~Nod(){
+		std::cout << "~Nod()\n";
 	}
 };
 
