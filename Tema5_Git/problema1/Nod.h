@@ -49,6 +49,12 @@ struct Nod {
 		return false;
 	}
 
+	int max_depth() const {
+		const int left_depth = left ? left->max_depth() : 0;
+		const int right_depth = right ? right->max_depth() : 0;
+		return (left_depth > right_depth ? left_depth : right_depth) + 1;
+	}
+
 	~Nod(){
 		std::cout << "~Nod()\n";
 	}

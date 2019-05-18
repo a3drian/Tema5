@@ -33,7 +33,8 @@ void sterge(Arbore_Caut &copac) {
 
 		Nod * deSters = copac.search(x);
 		copac.delete_element(deSters);
-		//copac.delete_pseudo(deSters);
+		//copac.delete_pseudo_transplant(deSters);
+		//copac.delete_pseudo_transplant_pseudo(deSters);
 	} else {
 		logn("Arborele este gol.");
 	}
