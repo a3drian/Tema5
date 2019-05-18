@@ -13,6 +13,7 @@ int main() {
 
 	copac.construct(listaNoduri);
 
+	imp("Arbore:");
 	printTree(copac);
 
 	while (true) {
@@ -30,11 +31,7 @@ int main() {
 			case 1:
 				{
 					logn("1. Cauta");
-					if (!copac.isEmpty()) {
-						cauta(copac);
-					} else {
-						logn("Arborele este gol.");
-					}
+					cauta(copac);
 					sout;
 					break;
 				}
