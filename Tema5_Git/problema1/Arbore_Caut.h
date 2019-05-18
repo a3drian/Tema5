@@ -711,6 +711,16 @@ bool Arbore_Caut::delete_element(Nod * node) {
 			//y->left = node->left;
 			//node->left->parent = y;
 
+			//Nod * y = succesor(node->info);
+			//if (y != node->right) {
+			//	transplant(y, y->right);
+			//	y->right = node->right;
+			//	node->right->parent = y;
+			//}
+			//transplant(node, y);
+			//y->left = node->left;
+			//node->left->parent = y;
+
 			this->size--;
 			return true;
 		}
