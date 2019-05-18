@@ -18,7 +18,7 @@ int main() {
 	while (true) {
 		menuText();
 
-		unsigned int comanda;
+		unsigned short comanda;
 		log(">");
 		std::cin >> comanda;
 
@@ -30,7 +30,11 @@ int main() {
 			case 1:
 				{
 					logn("1. Cauta");
-					cauta(copac);
+					if (!copac.isEmpty()) {
+						cauta(copac);
+					} else {
+						logn("Arborele este gol.");
+					}
 					sout;
 					break;
 				}
@@ -66,6 +70,20 @@ int main() {
 				{
 					logn("6. Predecesor");
 					predec(copac);
+					sout;
+					break;
+				}
+			case 7:
+				{
+					logn("7. Insereaza");
+					insereaza(copac);
+					sout;
+					break;
+				}
+			case 8:
+				{
+					logn("8. Printeaza");
+					printTree(copac);
 					sout;
 					break;
 				}

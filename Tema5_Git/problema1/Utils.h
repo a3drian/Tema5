@@ -1,11 +1,5 @@
 #pragma once
 
-#define sout std::cout << "\n"
-#define lg(x) std::cout << (x)
-#define log(x) std::cout << (x) << " "
-#define logn(x) std::cout << (x) << "\n"
-#define imp(x) std::cout << "---------------" << (x) << "---------------" << "\n"
-
 void menuText(){
 	logn("1. Cauta");
 	logn("2. Sterge");
@@ -13,6 +7,8 @@ void menuText(){
 	logn("4. Element maxim");
 	logn("5. Succesor");
 	logn("6. Predecesor");
+	logn("7. Insereaza");
+	logn("8. Printeaza");
 
 	logn("0. Exit");
 	sout;
@@ -31,7 +27,7 @@ void sterge(Arbore_Caut &copac) {
 	std::cin >> x;
 
 	Nod * deSters = copac.search(x);
-	copac.delete_element(deSters);
+	copac.delete_el(deSters);
 }
 
 void elemMin(const Arbore_Caut &copac) {
@@ -65,8 +61,16 @@ void predec(const Arbore_Caut &copac) {
 	std::cout << "Radacina subarbore: ";
 	std::cin >> x;
 
+	copac.predecesor(x);
+}
+
+void insereaza(Arbore_Caut &copac){
+	int x;
+	std::cout << "Radacina subarbore: ";
+	std::cin >> x;
+
 	Nod * leaf = new Nod(x);
-	copac.predecesor(leaf);
+	copac.insert(leaf);
 }
 
 void readFromFile(std::vector<Nod*> &listaNoduri, int &cateNoduri){
