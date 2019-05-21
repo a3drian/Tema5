@@ -2,29 +2,52 @@
 #include "problema1/Utils.h"
 #include <ctime>
 
+void drawRandom(std::vector<Nod*> &listaNoduri, int cateNoduri) {
+	listaNoduri = std::vector<Nod*>(cateNoduri);
+	for (int i = 0; i < cateNoduri; i++) {
+		int valoare = rand() % 100;
+		Nod * leaf = new Nod(valoare);
+		listaNoduri[i] = leaf;
+	}
+}
+
 int main() {
 	srand(time(NULL));
 
 	Arbore_Caut copac = Arbore_Caut();
 
 	int cateNoduri;
-	//std::vector<Nod*> listaNoduri;
-	//readFromFile(listaNoduri, cateNoduri);
+	std::vector<Nod*> listaNoduri;
 
-	std::cin >> cateNoduri;
-	std::vector<Nod*> listaNoduri(cateNoduri);
-	for(int i = 0; i <cateNoduri; i++) {
-		int valoare = rand() % 100;
-		Nod * leaf = new Nod(valoare);
-		listaNoduri[i] = leaf;
-	}
-
+	readFromFile(listaNoduri, cateNoduri);
 	copac.construct(listaNoduri);
-	copac.sterge_random(listaNoduri);
-
+	//copac.sterge_random(listaNoduri);
 	imp("Arbore:");
 	//printTree(copac);
 	copac.dump();
+
+	//std::cin >> cateNoduri;
+	//drawRandom(listaNoduri, cateNoduri);
+
+	//copac.construct(listaNoduri);
+	////copac.sterge_random(listaNoduri);
+
+	//imp("Arbore:");
+	////printTree(copac);
+	//copac.dump();
+
+	//while (true) {
+	//	std::cout << "Redraw?: ";
+	//	bool y;
+	//	std::cin >> y;
+	//	if (y == true) {
+	//		drawRandom(listaNoduri, cateNoduri);
+	//		copac.dump();
+	//	} else {
+	//		break;
+	//	}
+	//}
+
 
 	while (true) {
 		menuText();
@@ -49,8 +72,9 @@ int main() {
 				{
 					logn("2. Sterge");
 					sterge(copac);
-					//printTree(copac);
-					copac.dump();
+					printTree(copac);
+					//copac.sterge_random(listaNoduri);
+					//copac.dump();
 					sout;
 					break;
 				}
