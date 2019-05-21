@@ -698,8 +698,27 @@ bool Arbore_Caut::delete_element(Nod * node) {
 		if (node->hasTwoSons()) {
 			imp("2 fii");
 
-			Nod * temp = this->succesor(node->info);
-			transplant(node, temp);
+			Nod * y = this->succesor(node->info);
+			if (y == node->right) { //succesorul este descendentul direct
+				transplant(node, y);
+				this->size--;	
+				return true;
+			}
+
+			if (y != node->right) { //succesorul nu este descendentul direct
+				if (y->isLeaf()) {
+					imp("succesorul e frunza");
+					transplant(node, y);
+					//y->left = node->left;
+					//y->right = node->right;
+				} else {
+
+				}
+
+
+			}
+
+
 
 			//Nod * y = succesor(node->info);
 			//if (y != node->right) {
@@ -721,8 +740,7 @@ bool Arbore_Caut::delete_element(Nod * node) {
 			//y->left = node->left;
 			//node->left->parent = y;
 
-			this->size--;
-			return true;
+			
 		}
 	}
 }
