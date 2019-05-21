@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ctime>
+
 void menuText() {
 	logn("1. Cauta");
 	logn("2. Sterge");
@@ -9,6 +11,9 @@ void menuText() {
 	logn("6. Predecesor");
 	logn("7. Insereaza");
 	logn("8. Printeaza");
+	logn("9. Goleste");
+	logn("10. Goleste aleator in fisier");
+	logn("11. Redraw");
 
 	logn("0. Exit");
 	sout;
@@ -33,8 +38,6 @@ void sterge(Arbore_Caut &copac) {
 
 		Nod * deSters = copac.search(x);
 		copac.delete_element(deSters);
-		//copac.delete_pseudo_transplant(deSters);
-		//copac.delete_pseudo_transplant_pseudo(deSters);
 	} else {
 		logn("Arborele este gol.");
 	}
@@ -99,6 +102,41 @@ void insereaza(Arbore_Caut &copac) {
 	copac.insert(leaf);
 }
 
+void drawRandom(std::vector<Nod*> &listaNoduri, const int &cateNoduri) {
+	listaNoduri = std::vector<Nod*>(cateNoduri);
+	for (int i = 0; i < cateNoduri; i++) {
+		int valoare = rand() % 100;
+		Nod * leaf = new Nod(valoare);
+		listaNoduri[i] = leaf;
+	}
+}
+
+void startOver(Arbore_Caut &copac, std::vector<Nod*> &listaNoduri, int &cateNoduri) {
+	std::cout << "Numarul de noduri pentru arborele generat aleator: ";
+	std::cin >> cateNoduri;
+	drawRandom(listaNoduri, cateNoduri);
+
+	copac.construct(listaNoduri);
+
+	imp("Arborele generat aleator:");
+	copac.dump();
+	sout;
+
+	while (true) {
+		std::cout << "Redraw? (0/1): ";
+		unsigned short y;
+		std::cin >> y;
+		if (y == 1) {
+			drawRandom(listaNoduri, cateNoduri);
+			copac.empty();
+			copac.construct(listaNoduri);
+			copac.dump();
+		} else {
+			break;
+		}
+	}
+}
+
 void readFromFile(std::vector<Nod*> &listaNoduri, int &cateNoduri) {
 
 	std::ifstream f("problema1/noduri.in");
@@ -130,4 +168,3 @@ void printTree(Arbore_Caut copac) {
 		logn("Arborele este gol.");
 	}
 }
-

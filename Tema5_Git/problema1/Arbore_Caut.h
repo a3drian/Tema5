@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Nod.h"
+
 #include <sstream>
 #include <algorithm>    // std::random_shuffle
 
@@ -31,17 +32,19 @@ public:
 	Nod * succesor(int) const;
 	Nod * predecesor(int) const;
 
-	void transplant(Nod *, Nod *);
 	void transplant_pseudo(Nod *, Nod *);
-
-	bool delete_element(Nod *);
-
 	bool delete_pseudo_transplant(Nod *);
 	bool delete_pseudo_transplant_pseudo(Nod *);
+
+	void transplant(Nod *, Nod *);
+	bool delete_element(Nod *);
 
 	void print(unsigned short) const;
 	void construct(const std::vector<Nod*> &);
 	void empty();
+	void emptyToFile(std::ofstream &);
+	void emptyToFileRandom(std::ofstream &, std::vector<Nod*>);
+
 	void sterge_random(std::vector<Nod*>);
 
 	/*Printare frumi*/
@@ -466,113 +469,6 @@ Nod* Arbore_Caut::predecesor(int key) const {
 	return y;
 }
 
-void Arbore_Caut::transplant_pseudo(Nod * vechi, Nod * nou) {
-
-	//aici nou poate fi null pentru ca va fi inlocuit oricum
-	if (vechi->parent == nullptr) {
-		this->root = nou;
-	} else {
-		if (vechi == vechi->parent->left) {
-			vechi->parent->left = nou;
-		} else {
-			vechi->parent->right = nou;
-		}
-	}
-
-	//pentru cazul in care nou nu este null
-	//nu intra cand facem transplant intre vechi si null (cazul 1)
-	if (nou != nullptr) {
-
-		imp("nou != nullptr");
-		if (nou) {
-			std::cout << "Schimb intre " << vechi->info << " si " << nou->info << " de parinti.\n";
-			if (vechi->parent) {
-				std::cout << "Lui " << nou->info << " i se pune parinte " << vechi->parent->info << ".\n";
-			}
-		}
-
-		if (vechi) {
-			log(vechi->info);
-		}
-
-		if (vechi->parent) {
-			lg("(");
-			lg(vechi->parent->info);
-			logn(")");
-		}
-
-		if (nou) {
-			log(nou->info);
-		}
-
-		if (nou->parent) {
-			lg("(");
-			lg(nou->parent->info);
-			logn(")");
-		}
-		imp("nou != nullptr");
-
-		nou->parent = vechi->parent;
-	}
-}
-
-bool Arbore_Caut::delete_pseudo_transplant(Nod * node) {
-
-	if (node == nullptr) {
-		std::cout << "Nodul nu exista in arbore.\n";
-		return false;
-	}
-
-	if (node->left == nullptr) {
-		transplant(node, node->right);
-	} else {
-		if (node->right == nullptr) {
-			transplant(node, node->left);
-		} else {
-			Nod * y = succesor(node->info);
-			if (y != node->right) {
-				transplant(y, y->right);
-				y->right = node->right;
-				node->right->parent = y;
-			}
-			transplant(node, y);
-			y->left = node->left;
-			node->left->parent = y;
-		}
-	}
-
-	this->size--;
-}
-
-bool Arbore_Caut::delete_pseudo_transplant_pseudo(Nod * node) {
-
-	if (node == nullptr) {
-		std::cout << "Nodul nu exista in arbore.\n";
-		return false;
-	}
-
-	if (node->left == nullptr) {
-		transplant_pseudo(node, node->right);
-	} else {
-		if (node->right == nullptr) {
-			transplant_pseudo(node, node->left);
-		} else {
-			//Nod * y = minim(node->right); //echivalent cu aia mai jos, minimul din right-subtree e acelasi lucru cu succesorul nodului pe care il stergem
-			Nod * y = succesor(node->info);
-			if (y != node->right) { // nu e descendent direct (3a)
-				transplant_pseudo(y, y->right);
-				y->right = node->right;
-				node->right->parent = y;
-			}
-			transplant_pseudo(node, y);
-			y->left = node->left;
-			node->left->parent = y;
-		}
-	}
-
-	this->size--;
-}
-
 void Arbore_Caut::transplant(Nod * vechi, Nod * nou) {
 
 	// parintele lui vechi devine parintele lui nou
@@ -698,31 +594,23 @@ bool Arbore_Caut::delete_element(Nod * node) {
 		if (node->hasTwoSons()) {
 			imp("2 fii");
 
-			Nod * temp = this->succesor(node->info);
-			transplant(node, temp);
+			Nod * y = this->succesor(node->info);
+			if (y == node->right) { //succesorul este descendentul direct
+				transplant(node, y);
+				this->size--;
+				return true;
+			}
 
-			//Nod * y = succesor(node->info);
-			//if (y != node->right) {
-			//	transplant(y, y->right);
-			//	y->right = node->right;
-			//	node->right->parent = y;
-			//}
-			//transplant(node, y);
-			//y->left = node->left;
-			//node->left->parent = y;
+			if (y != node->right) { //succesorul nu este descendentul direct
+				imp("succesorul nu e descendent direct");
 
-			//Nod * y = succesor(node->info);
-			//if (y != node->right) {
-			//	transplant(y, y->right);
-			//	y->right = node->right;
-			//	node->right->parent = y;
-			//}
-			//transplant(node, y);
-			//y->left = node->left;
-			//node->left->parent = y;
+				transplant(y, y->right);
 
-			this->size--;
-			return true;
+				transplant(node, y);
+
+				this->size--;
+				return true;
+			}
 		}
 	}
 }
@@ -759,37 +647,63 @@ void Arbore_Caut::empty() {
 		log("Stergem pe");
 		logn(this->root->info);
 		this->dump();
-		//this->delete_pseudo_transplant_pseudo(this->root);
-		this->delete_pseudo_transplant(this->root);
+		this->delete_element(this->root);
 	}
 }
 
-void Arbore_Caut::sterge_random(std::vector<Nod*>listaNoduri) {
+void Arbore_Caut::emptyToFile(std::ofstream &file) {
+	file << "----------Redrawn----------" << "\n";
+
+	while (!this->isEmpty()) {
+		file << "Stergem pe ";
+		file << this->root->info;
+		file << "\n";
+		this->dumpToFile(file);
+		this->delete_element(this->root);
+		file << "\n";
+	}
+}
+
+void Arbore_Caut::emptyToFileRandom(std::ofstream &file, std::vector<Nod*> listaNoduri) {
+	file << "----------Redrawn----------" << "\n";
+
+	std::random_shuffle(listaNoduri.begin(), listaNoduri.end());
+
+	for (int i = 0; i < listaNoduri.size(); i++) {
+		file << "Stergem pe ";
+		file << listaNoduri[i]->info;
+		file << "\n";
+		this->dumpToFile(file);
+		this->delete_element(listaNoduri[i]);
+		file << "\n";
+	}
+
+	for (int i = 0; i < listaNoduri.size(); i++) {
+		std::cout << listaNoduri[i]->info << " ";
+	}
+}
+
+
+void Arbore_Caut::sterge_random(std::vector<Nod*> listaNoduri) {
 	std::ofstream g("problema1/output.in");
 
 	std::random_shuffle(listaNoduri.begin(), listaNoduri.end());
+
 	for (int i = 0; i < listaNoduri.size(); i++) {
-		if (listaNoduri[i]->isLeaf() || listaNoduri[i]->hasOneSon()) {
+		if (listaNoduri[i]->hasTwoSons()) {
 			g << "Stergem pe ";
 			g << listaNoduri[i]->info;
 			g << "\n";
 			this->dumpToFile(g);
 
-			//std::string prefix = "";
-			//printBTToFile(prefix, this->root, false, g);
-			//g << "\n";
-
 			g << "\n";
-			//this->delete_pseudo_transplant_pseudo(listaNoduri[i]);
-			//this->delete_pseudo_transplant(listaNoduri[i]);
-
-			//sterg doar daca e cazul 1 sau cazul 2
 
 			this->delete_element(listaNoduri[i]);
 
 			g << "L-am sters pe ";
 			g << listaNoduri[i]->info;
 			g << ":\n";
+			//}
 		}
 	}
 

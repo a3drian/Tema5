@@ -1,30 +1,26 @@
 #include "problema1/Arbore_Caut.h"
 #include "problema1/Utils.h"
-#include <ctime>
+
 
 int main() {
 	srand(time(NULL));
+	std::ofstream file("problema1/output.in");
 
 	Arbore_Caut copac = Arbore_Caut();
 
 	int cateNoduri;
-	//std::vector<Nod*> listaNoduri;
+	std::vector<Nod*> listaNoduri;
+
+	//FROM FILE
 	//readFromFile(listaNoduri, cateNoduri);
+	//copac.construct(listaNoduri);
+	////copac.sterge_random(listaNoduri);
+	//imp("Arbore:");
+	////printTree(copac);
+	//copac.dump();
 
-	std::cin >> cateNoduri;
-	std::vector<Nod*> listaNoduri(cateNoduri);
-	for(int i = 0; i <cateNoduri; i++) {
-		int valoare = rand() % 100;
-		Nod * leaf = new Nod(valoare);
-		listaNoduri[i] = leaf;
-	}
-
-	copac.construct(listaNoduri);
-	copac.sterge_random(listaNoduri);
-
-	imp("Arbore:");
-	//printTree(copac);
-	copac.dump();
+	//RANDOM
+	startOver(copac, listaNoduri, cateNoduri);
 
 	while (true) {
 		menuText();
@@ -49,8 +45,6 @@ int main() {
 				{
 					logn("2. Sterge");
 					sterge(copac);
-					//printTree(copac);
-					copac.dump();
 					sout;
 					break;
 				}
@@ -92,7 +86,6 @@ int main() {
 			case 8:
 				{
 					logn("8. Printeaza");
-					//printTree(copac);
 					copac.dump();
 					sout;
 					break;
@@ -100,24 +93,37 @@ int main() {
 			case 9:
 				{
 					logn("9. Inaltimea");
-					imp(copac.get_max_depth());
-					copac.dump();
+
+					copac.empty();
 					sout;
 					break;
 				}
 			case 10:
 				{
-					logn("10. Goleste");
-					//copac.empty();
-					copac.sterge_random(listaNoduri);
+					logn("10. Goleste aleator in fisier");
+
+					if (copac.getSize() == cateNoduri) {
+						copac.emptyToFileRandom(file, listaNoduri);
+					} else {
+						logn("Nu se poate sterge aleator din fisier.");
+					}
+
+					sout;
+					break;
+				}
+			case 11:
+				{
+					logn("11. Redraw");
+
+					startOver(copac, listaNoduri, cateNoduri);
+
 					sout;
 					break;
 				}
 		}
 	}
 
-	//printTree(copac);
-	copac.dump();
+	file.close();
 
 	sout;
 	system("pause");
