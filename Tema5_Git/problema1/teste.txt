@@ -1,0 +1,9 @@
+31 17 53 63 70
+
+17 5 50 41 53
+
+14 4 40 1 28 98 30 77 29 30 80 78
+sterg pe 1 40 78 28 80 29 77 14 4 30 98 30 (cand il sterg pe 28 nu urca 29 in locul lui, ci 30)
+(pentru ca 28 are un singur fiu si il ridica pe ala nenul in locul lui)
+
+42 0 84 70 87 60 52 68 62
