@@ -54,8 +54,18 @@ public:
 
 	void sterge_random(std::vector<Nod*>);
 
+	void insert_repair(Nod *);
+	void delete_repair(Nod *);
+	void rotate_right(Nod *);
+	void rotate_left(Nod *);
+
+	void merge(Arbore_AVL);
+
+	unsigned int inaltime_maxima(Nod*);
+
 	void inaltime(Nod*);
-	int inalt(Nod*);
+	void factor(Nod*);
+	void adancime(Nod*);
 
 	/*Printare frumi*/
 	int get_max_depth() const { return root ? root->max_depth() : 0; }
@@ -440,7 +450,7 @@ public:
 				nodeCount--;
 			}
 			//Afisaza factorul de balansare
-			/*std::cout << "\n";
+			std::cout << "\n";
 			for (int index = 0; index < previousLevelDim; index++)
 			{
 				numberSizeCorrector = 0;
@@ -449,15 +459,15 @@ public:
 					std::cout << " ";
 				else {
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
-					std::cout << previousLevelNodes[index].node->factor;
+					std::cout << previousLevelNodes[index].node->getFactor();
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-					if (previousLevelNodes[index].node->factor < 0)
+					if (previousLevelNodes[index].node->getFactor() < 0)
 						numberSizeCorrector++;
 				}
 				if (index != previousLevelDim - 1);
-					ShowChar(" ", previousLevelNodes[index].rightSpacing - numberSizeCorrector);
+				ShowChar(" ", previousLevelNodes[index].rightSpacing - numberSizeCorrector);
 			}
-			*/
+
 			//Afisaza inaltimea
 			std::cout << "\n";
 			for (int index = 0; index < previousLevelDim; index++)
@@ -468,14 +478,33 @@ public:
 					std::cout << " ";
 				else {
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
-					std::cout << previousLevelNodes[index].node->height;
+					std::cout << previousLevelNodes[index].node->getHeight();
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-					if (previousLevelNodes[index].node->height < 0)
+					if (previousLevelNodes[index].node->getHeight() < 0)
 						numberSizeCorrector++;
 				}
 				if (index != previousLevelDim - 1);
 				ShowChar(" ", previousLevelNodes[index].rightSpacing - numberSizeCorrector);
 			}
+
+			//Afiseaza adancimea
+			//std::cout << "\n";
+			//for (int index = 0; index < previousLevelDim; index++)
+			//{
+			//	numberSizeCorrector = 0;
+			//	ShowChar(" ", previousLevelNodes[index].leftSpacing);
+			//	if (previousLevelNodes[index].node == nullptr)
+			//		std::cout << " ";
+			//	else {
+			//		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+			//		std::cout << previousLevelNodes[index].node->getDepth();
+			//		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+			//		if (previousLevelNodes[index].node->getDepth() < 0)
+			//			numberSizeCorrector++;
+			//	}
+			//	if (index != previousLevelDim - 1);
+			//	ShowChar(" ", previousLevelNodes[index].rightSpacing - numberSizeCorrector);
+			//}
 
 			std::cout << "\n";
 			currentLevel++;
@@ -510,34 +539,33 @@ public:
 
 };
 
-int Arbore_AVL::inalt(Nod * n) {
-	if (n == nullptr) {
-		return 0;
-	}
-	int retval = -1;
-	n->setHeight(0);
-	//std::stack<Nod*> s;
-	std::queue<Nod*> s;
-	s.push(n);
-	while (!s.empty()) {
-		Nod * n = s.front();
-		s.pop();
-		int currDepth = n->getHeight();
-		if (currDepth > retval) {
-			retval = currDepth;
-		}
-		if (n->left != nullptr) {
-			n->left->setHeight(currDepth + 1);
-			s.push(n->left);
-		}
-		if (n->right != nullptr) {
-			n->right->setHeight(currDepth + 1);
-			s.push(n->right);
-		}
-
-	}
-	return retval;
-}
+//void Arbore_AVL::adancime(Nod * root) {
+//
+//	int retval = -1;
+//	root->setHeight(0);
+//	std::stack<Nod*> stiva;
+//	stiva.push(root);
+//
+//	while (!stiva.empty()) {
+//
+//		Nod * n = stiva.top();
+//		stiva.pop();
+//
+//		int currDepth = n->getHeight();
+//		if (currDepth > retval) {
+//			retval = currDepth;
+//		}
+//		if (n->left != nullptr) {
+//			n->left->setHeight(currDepth + 1);
+//			stiva.push(n->left);
+//		}
+//		if (n->right != nullptr) {
+//			n->right->setHeight(currDepth + 1);
+//			stiva.push(n->right);
+//		}
+//
+//	}
+//}
 
 void printStack(std::stack<Nod*> noduri) {
 	while (!noduri.empty()) {
@@ -546,98 +574,171 @@ void printStack(std::stack<Nod*> noduri) {
 	}
 }
 
-int getDepthNoRecursion(Nod * n) {
-	if (n == nullptr) {
-		return 0;
-	}
-	int retval = -1;
-	n->setHeight(0);
-	std::stack<Nod*> s;
-	s.push(n);
-	while (!s.empty()) {
-		Nod * n = s.top();
-		s.pop();
-		int currDepth = n->getHeight();
-		if (currDepth > retval) {
-			retval = currDepth;
-		}
-		if (n->left != nullptr) {
-			n->left->setHeight(currDepth + 1);
-			s.push(n->left);
-		}
-		if (n->right != nullptr) {
-			n->right->setHeight(currDepth + 1);
-			s.push(n->right);
+unsigned int Arbore_AVL::inaltime_maxima(Nod * root) {
+	std::queue<Nod*> queue;
+	queue.push(root);
+
+	int height = -1;
+
+	while (!queue.empty())
+	{
+		int size = queue.size();
+
+		while (size--)
+		{
+			Nod * front = queue.front();
+			queue.pop();
+
+			if (front->left)
+				queue.push(front->left);
+
+			if (front->right)
+				queue.push(front->right);
 		}
 
+		height++;
 	}
-	return retval;
+
+	std::cout << "Inaltimea arborelui este: " << height << ".\n";
+	return height;
 }
 
 void Arbore_AVL::inaltime(Nod * root) {
 	std::queue<Nod*> q_nodes;
 
-	int height = 0;
-	Nod * start = this->root;
-	start->setHeight(height);
+	int height = this->inaltime_maxima(root);
+	Nod * start = root;
+	start->setHeight(height--);
 
 	q_nodes.push(start);
 
-	while(!q_nodes.empty()) {
+	while (!q_nodes.empty()) {
 		int size = q_nodes.size();
 
-		while(size--) {
+		while (size--) {
 			Nod * temp = q_nodes.front();
 			q_nodes.pop();
-			if(temp->left) {
-				temp->left->setHeight(temp->getHeight() + 1);
+			if (temp->left) {
+				temp->left->setHeight(temp->getHeight() - 1);
 				q_nodes.push(temp->left);
 			}
 			if (temp->right) {
-				temp->right->setHeight(temp->getHeight() + 1);
+				temp->right->setHeight(temp->getHeight() - 1);
 				q_nodes.push(temp->right);
 			}
-			height++;
+			height--;
 		}
 	}
 
-	std::cout << "Inaltimile: " << height;
+}
 
+void Arbore_AVL::adancime(Nod * root) {
 
-	//std::stack<Nod*> s_nodes;
+	std::queue<Nod*> q_nodes;
 
-	//int inaltime = 0;
+	int depth = 0;
+	Nod * start = root;
+	start->setDepth(depth);
 
-	//s_nodes.push(start);
+	q_nodes.push(start);
 
-	////for(int i = 0; i < 3; i++) {
-	////while(!start->isLeaf()){
-	//while (!s_nodes.empty()) {
+	while (!q_nodes.empty()) {
+		int size = q_nodes.size();
 
-	//	Nod * temp = s_nodes.top();
-	//	s_nodes.pop();
+		while (size--) {
+			Nod * temp = q_nodes.front();
+			q_nodes.pop();
+			if (temp->left) {
+				temp->left->setDepth(temp->getDepth() + 1);
+				q_nodes.push(temp->left);
+			}
+			if (temp->right) {
+				temp->right->setDepth(temp->getDepth() + 1);
+				q_nodes.push(temp->right);
+			}
+			depth++;
+		}
+	}
 
-	//	q_nodes.push(start);
+}
 
-	//	if (temp->left) {
-	//		temp->setHeight(inaltime + 1);
-	//		s_nodes.push(temp->left);
-	//	}
+int balans_factor(Nod * temp) {
 
-	//	if (temp->right) {
-	//		temp->setHeight(inaltime + 1);
-	//		s_nodes.push(temp->right);
-	//	}
+	std::cout << " pt. nodul " << temp->info << " ";
 
-	//	//s_nodes.pop();
+	int factor = 0;
 
-	//	inaltime++;
-	//	std::cout << start->info << " ";
-	//	printStack(s_nodes);
-	//}
+	if (temp->right == nullptr) {
 
-	//std::cout << "Inaltimile: ";
+		std::cout << "[0] - " << temp->getHeight() << ".\n";
+		factor = 0 - temp->getHeight();
 
+	} else if (temp->left == nullptr) {
+
+		std::cout << temp->getHeight() << " - [0]" << ".\n";
+		factor = temp->getHeight() - 0;
+
+	} else {
+
+		std::cout << temp->right->getHeight() << " - " << temp->left->getHeight() << ".\n";
+		factor = temp->right->getHeight() - temp->left->getHeight();
+
+	}
+
+	return factor;
+
+}
+
+void Arbore_AVL::factor(Nod * root) {
+	std::queue<Nod*> q_nodes;
+
+	Nod * start = this->root;
+
+	q_nodes.push(start);
+
+	while (!q_nodes.empty()) {
+		int size = q_nodes.size();
+
+		while (size--) {
+
+			Nod * temp = q_nodes.front();
+			q_nodes.pop();
+
+			std::cout << temp->info << " ";
+
+			if (temp->left) {
+
+				if (temp->right == nullptr) {
+					std::cout << "0 - " << temp->left->getHeight() << ".\n";
+					temp->left->setFactor(0 - temp->left->getHeight());
+				} else if (temp->left == nullptr) {
+					std::cout << temp->right->getHeight() << " - 0" << ".\n";
+					temp->left->setFactor(temp->right->getHeight() - 0);
+				} else {
+					std::cout << temp->right->getHeight() << " - " << temp->left->getHeight() << ".\n";
+					temp->left->setFactor(temp->right->getHeight() - temp->left->getHeight());
+				}
+
+				q_nodes.push(temp->left);
+			}
+
+			if (temp->right) {
+
+				if (temp->right == nullptr) {
+					std::cout << "0 - " << temp->left->getHeight() << ".\n";
+					temp->right->setFactor(0 - temp->left->getHeight());
+				} else if (temp->left == nullptr) {
+					std::cout << temp->right->getHeight() << " - 0" << ".\n";
+					temp->right->setFactor(temp->right->getHeight() - 0);
+				} else {
+					std::cout << temp->right->getHeight() << " - " << temp->left->getHeight() << ".\n";
+					temp->right->setFactor(temp->right->getHeight() - temp->left->getHeight());
+				}
+
+				q_nodes.push(temp->right);
+			}
+		}
+	}
 }
 
 
@@ -1035,7 +1136,7 @@ void Arbore_AVL::emptyToFileRandom(std::ofstream &file, std::vector<Nod*> listaN
 }
 
 void Arbore_AVL::sterge_random(std::vector<Nod*> listaNoduri) {
-	std::ofstream g("problema1/output.in");
+	std::ofstream g("problema2/output.in");
 
 	std::random_shuffle(listaNoduri.begin(), listaNoduri.end());
 

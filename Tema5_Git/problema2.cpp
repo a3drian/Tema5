@@ -17,6 +17,7 @@ int main() {
 	imp("Arbore:");
 	//printTree(copac);
 	copac.dump();
+	sout;
 
 	//RANDOM
 	//startOver(copac, listaNoduri, cateNoduri);
@@ -85,22 +86,45 @@ int main() {
 			case 8:
 				{
 					logn("8. Printeaza");
-					//copac.dump();
 
-					copac.inaltime(copac.root);
-					//getDepthNoRecursion(copac.root);
-					//copac.inalt(copac.root);
-					sout;
+					//copac.root->setFactor(copac.root->right->getHeight() - copac.root->left->getHeight());
+					//copac.root->setFactor(0);
+
+					//copac.root->left->setFactor(0);
+					//copac.root->right->setFactor(0);
+
+					//copac.root->left->left->setFactor(1);
+					//copac.root->left->right->setFactor(1);
+					//copac.root->right->left->setFactor(-1);
+					//copac.root->right->right->setFactor(-1);
+
+					//copac.root->left->left->right->setFactor(0);
+					//copac.root->left->right->right->setFactor(0);
+
+					//copac.root->right->left->left->setFactor(0);
+					//copac.root->right->right->left->setFactor(0);
+
+
 					copac.print(4);
+					//copac.dump();
 
 					sout;
 					break;
 				}
 			case 9:
 				{
-					logn("9. Inaltimea");
+					//logn("9. Inaltimea");
+					logn("9. SETEAZA INALTIME");
 
-					copac.inaltime(copac.root);
+					for (int i = 0; i < cateNoduri; i++) {
+						listaNoduri[i]->setHeight(listaNoduri[i]->max_dep());
+					}
+					for (int i = 0; i < cateNoduri; i++) {
+						listaNoduri[i]->setFactor(balans_factor(listaNoduri[i]));
+					}
+
+					//copac.inaltime(copac.root);
+
 					sout;
 					sout;
 					break;

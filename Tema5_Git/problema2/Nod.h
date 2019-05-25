@@ -20,7 +20,10 @@ public:
 	Nod * parent;
 
 	bool visited;
-	unsigned short height;
+	int height;
+	int depth;
+
+	int factor;
 
 	Nod(int key = 0) {
 		this->info = key;
@@ -29,15 +32,34 @@ public:
 		this->parent = nullptr;
 
 		this->height = 0;
+		this->depth = 0;
+		this->factor = 0;
+
 		visited = false;
 	}
 
-	void setHeight(unsigned short height){
+	void setHeight(int height){
 		this->height = height;
 	}
 
-	unsigned short getHeight() const{
+	void setDepth(int depth) {
+		this->depth = depth;
+	}
+
+	void setFactor(int factor) {
+		this->factor = factor;
+	}
+
+	int getHeight() const{
 		return this->height;
+	}
+
+	int getDepth() const {
+		return this->depth;
+	}
+
+	int getFactor() const {
+		return this->factor;
 	}
 
 	bool isLeaf() {
@@ -69,6 +91,12 @@ public:
 		const int left_depth = left ? left->max_depth() : 0;
 		const int right_depth = right ? right->max_depth() : 0;
 		return (left_depth > right_depth ? left_depth : right_depth) + 1;
+	}
+
+	int max_dep() const {
+		const int left_depth = left ? left->max_depth() : 0;
+		const int right_depth = right ? right->max_depth() : 0;
+		return (left_depth > right_depth ? left_depth : right_depth);
 	}
 
 	bool wasVisited(){
