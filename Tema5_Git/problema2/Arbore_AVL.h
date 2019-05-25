@@ -56,12 +56,12 @@ public:
 
 	void insert_repair(Nod *);
 	void delete_repair(Nod *);
-	void rotate_right(Nod *);
-	void rotate_left(Nod *);
+	void rotate_right(int);
+	void rotate_left(int);
 
 	void merge(Arbore_AVL);
 
-	unsigned int inaltime_maxima(Nod*);
+	int inaltime_maxima(Nod*);
 
 	void inaltime(Nod*);
 	void factor(Nod*);
@@ -574,7 +574,65 @@ void printStack(std::stack<Nod*> noduri) {
 	}
 }
 
-unsigned int Arbore_AVL::inaltime_maxima(Nod * root) {
+void Arbore_AVL::rotate_left(int key) {
+
+	Nod * x = this->search(key);
+
+	Nod * y = x->right;
+	x->right = y->left;
+
+	if (y->left != nullptr) {
+		y->left->parent = x;
+	}
+
+	y->parent = x->parent;
+
+	if (x->parent == nullptr) {
+		this->root = y;
+	} else {
+		if (x == x->parent->left) { //vedem pe care parte a parintelui lui x il legam pe y
+			x->parent->left = y;
+		}
+		if (x == x->parent->right) {
+			x->parent->right = y;
+		}
+	}
+
+	// legam x de y ca fiu de tata
+	x->parent = y;
+	y->left = x;
+}
+
+void Arbore_AVL::rotate_right(int key) {
+
+	Nod * x = this->search(key);
+
+	Nod * y = x->left;
+	x->left = y->right;
+
+	if (y->right) {
+		y->right->parent = x;
+	}
+
+	y->parent = x->parent;
+
+	if (x->parent == nullptr) {
+		this->root = y;
+	} else {
+		if (x == x->parent->right) { //vedem pe care parte a parintelui lui x il legam pe y
+			x->parent->right = y;
+		}
+		if (x == x->parent->left) {
+			x->parent->left = y;
+		}
+	}
+
+	// legam x de y ca fiu de tata
+	x->parent = y;
+	y->right = x;
+}
+
+int Arbore_AVL::inaltime_maxima(Nod * root) {
 	std::queue<Nod*> queue;
 	queue.push(root);
 
@@ -664,7 +722,7 @@ void Arbore_AVL::adancime(Nod * root) {
 
 int balans_factor(Nod * temp) {
 
-	std::cout << " pt. nodul " << temp->info << " ";
+	std::cout << "Factor de balansare pt. nodul " << temp->info << " ";
 
 	int factor = 0;
 

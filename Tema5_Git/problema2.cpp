@@ -50,15 +50,17 @@ int main() {
 				}
 			case 3:
 				{
-					logn("3. Element minim");
-					elemMin(copac);
+					logn("3. Roteste stanga");
+					rot_st(copac);
+					//elemMin(copac);
 					sout;
 					break;
 				}
 			case 4:
 				{
-					logn("4. Element maxim");
-					elemMax(copac);
+					logn("4. Roteste dreapta");
+					rot_dr(copac);
+					//elemMax(copac);
 					sout;
 					break;
 				}
@@ -87,24 +89,6 @@ int main() {
 				{
 					logn("8. Printeaza");
 
-					//copac.root->setFactor(copac.root->right->getHeight() - copac.root->left->getHeight());
-					//copac.root->setFactor(0);
-
-					//copac.root->left->setFactor(0);
-					//copac.root->right->setFactor(0);
-
-					//copac.root->left->left->setFactor(1);
-					//copac.root->left->right->setFactor(1);
-					//copac.root->right->left->setFactor(-1);
-					//copac.root->right->right->setFactor(-1);
-
-					//copac.root->left->left->right->setFactor(0);
-					//copac.root->left->right->right->setFactor(0);
-
-					//copac.root->right->left->left->setFactor(0);
-					//copac.root->right->right->left->setFactor(0);
-
-
 					copac.print(4);
 					//copac.dump();
 
@@ -114,7 +98,7 @@ int main() {
 			case 9:
 				{
 					//logn("9. Inaltimea");
-					logn("9. SETEAZA INALTIME");
+					logn("9. SETEAZA INALTIME SI FACTOR");
 
 					for (int i = 0; i < cateNoduri; i++) {
 						listaNoduri[i]->setHeight(listaNoduri[i]->max_dep());
