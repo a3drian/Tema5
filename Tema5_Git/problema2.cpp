@@ -101,7 +101,8 @@ int main() {
 					logn("9. SETEAZA INALTIME SI FACTOR");
 
 					for (int i = 0; i < cateNoduri; i++) {
-						listaNoduri[i]->setHeight(listaNoduri[i]->max_dep());
+						//listaNoduri[i]->setHeight(listaNoduri[i]->max_dep());
+						listaNoduri[i]->setHeight(getHeight(listaNoduri[i]));
 					}
 					for (int i = 0; i < cateNoduri; i++) {
 						listaNoduri[i]->setFactor(balans_factor(listaNoduri[i]));

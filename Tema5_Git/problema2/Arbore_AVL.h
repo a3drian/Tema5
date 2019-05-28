@@ -309,7 +309,7 @@ public:
 	}
 	/*Printare frumi*/
 
-	// Merge pentru orice arbore binar retinut prin metoda stanga-dreapta
+	/*Printare frumi*/
 	struct LevelNode
 	{
 		int leftSpacing, rightSpacing;
@@ -536,43 +536,8 @@ public:
 		}
 		delete[] previousLevelNodes;
 	}
-
+	/*Printare frumi*/
 };
-
-//void Arbore_AVL::adancime(Nod * root) {
-//
-//	int retval = -1;
-//	root->setHeight(0);
-//	std::stack<Nod*> stiva;
-//	stiva.push(root);
-//
-//	while (!stiva.empty()) {
-//
-//		Nod * n = stiva.top();
-//		stiva.pop();
-//
-//		int currDepth = n->getHeight();
-//		if (currDepth > retval) {
-//			retval = currDepth;
-//		}
-//		if (n->left != nullptr) {
-//			n->left->setHeight(currDepth + 1);
-//			stiva.push(n->left);
-//		}
-//		if (n->right != nullptr) {
-//			n->right->setHeight(currDepth + 1);
-//			stiva.push(n->right);
-//		}
-//
-//	}
-//}
-
-void printStack(std::stack<Nod*> noduri) {
-	while (!noduri.empty()) {
-		std::cout << noduri.top()->info << " ";
-		noduri.pop();
-	}
-}
 
 void Arbore_AVL::rotate_left(int key) {
 
@@ -1128,6 +1093,7 @@ bool Arbore_AVL::delete_element(Nod * node) {
 void Arbore_AVL::construct(const std::vector<Nod*> &noduri) {
 	for (int i = 0; i < noduri.size(); i++) {
 		this->insert(noduri[i]);
+		//this->insert_repair(noduri[i]);
 	}
 }
 
@@ -1223,6 +1189,52 @@ void Arbore_AVL::sterge_random(std::vector<Nod*> listaNoduri) {
 	g.close();
 }
 
+void Arbore_AVL::insert_repair(Nod* element) {
+
+	std::string path;
+
+	Nod * x = this->root;
+	Nod * y = nullptr;
+
+	while (x != nullptr) {
+		y = x;
+		if (element->info < x->info) {
+			path.append("L");
+			x = x->left;
+		} else {
+			path.append("R");
+			x = x->right;
+		}
+	}
+
+	element->parent = y;
+
+	if (y == nullptr) {
+		this->root = element;
+	} else {
+		if (element->info < y->info) {
+			y->left = element; //sau de aici imi pot da seama pe ce parte a fost inserat
+		} else {
+			y->right = element;
+		}
+	}
+
+	std::cout << "Calea: ";
+	for(int i = 0; i < path.length(); i++) {
+		std::cout << path[i] << " ";
+	}
+	std::cout << "\n";
+
+	if(path[path.length() - 1] == 'L') {
+		std::cout << "Nodul a fost inserat pe stanga.\n";
+	}
+	if (path[path.length() - 1] == 'R') {
+		std::cout << "Nodul a fost inserat pe dreapta.\n";
+	}
+
+	this->size++;
+}
+
 void printBT(const std::string & prefix, Nod * nod, bool isLeft) {
 	if (nod != nullptr)
 	{
@@ -1291,4 +1303,41 @@ void Arbore_AVL::print(unsigned short option) const {
 				break;
 			}
 	}
+}
+
+int getHeight(Nod * root) {
+
+	std::queue<Nod *> q;
+	int height = 0;
+
+	// add root to the queue
+	q.push(root);
+
+	// add null as marker
+	q.push(nullptr);
+
+	while (!q.empty()) {
+		Nod * n = q.front();
+		q.pop();
+		// check if n is null, if yes, we have reached to the end of the
+		// current level, increment the height by 1, and add the another
+		// null as marker for next level
+		if (n == nullptr) {
+			// before adding null, check if queue is empty, which means we
+			// have traveled all the levels
+			if (!q.empty()) {
+				q.push(nullptr);
+			}
+			height++;
+		} else {
+			// else add the children of extracted node.
+			if (n->left != nullptr) {
+				q.push(n->left);
+			}
+			if (n->right != nullptr) {
+				q.push(n->right);
+			}
+		}
+	}
+	return (height - 1);
 }

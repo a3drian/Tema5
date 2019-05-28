@@ -102,7 +102,8 @@ void insereaza(Arbore_AVL &copac) {
 	std::cin >> x;
 
 	Nod * leaf = new Nod(x);
-	copac.insert(leaf);
+	//copac.insert(leaf);
+	copac.insert_repair(leaf);
 }
 
 void drawRandom(std::vector<Nod*> &listaNoduri, const int &cateNoduri) {
