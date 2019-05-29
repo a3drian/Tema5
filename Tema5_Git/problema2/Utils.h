@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ctime>
+#include "Arbore_AVL.h"
 
 void menuText() {
 	logn("1. Cauta");
@@ -10,8 +11,8 @@ void menuText() {
 	logn("3. Roteste stanga");
 	logn("4. Roteste dreapta");
 
-	logn("5. Succesor");
-	logn("6. Predecesor");
+	//logn("5. Succesor");
+	//logn("6. Predecesor");
 	logn("7. Insereaza");
 	logn("8. Printeaza");
 	logn("9. Goleste");

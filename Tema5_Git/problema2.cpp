@@ -102,7 +102,7 @@ int main() {
 
 					for (int i = 0; i < cateNoduri; i++) {
 						//listaNoduri[i]->setHeight(listaNoduri[i]->max_dep());
-						listaNoduri[i]->setHeight(getHeight(listaNoduri[i]));
+						listaNoduri[i]->setHeight(f_getHeight(listaNoduri[i]));
 					}
 					for (int i = 0; i < cateNoduri; i++) {
 						listaNoduri[i]->setFactor(balans_factor(listaNoduri[i]));

@@ -712,6 +712,43 @@ int balans_factor(Nod * temp) {
 
 }
 
+int f_getHeight(Nod * root) {
+
+	std::queue<Nod *> q;
+	int height = 0;
+
+	// add root to the queue
+	q.push(root);
+
+	// add null as marker
+	q.push(nullptr);
+
+	while (!q.empty()) {
+		Nod * n = q.front();
+		q.pop();
+		// check if n is null, if yes, we have reached to the end of the
+		// current level, increment the height by 1, and add the another
+		// null as marker for next level
+		if (n == nullptr) {
+			// before adding null, check if queue is empty, which means we
+			// have traveled all the levels
+			if (!q.empty()) {
+				q.push(nullptr);
+			}
+			height++;
+		} else {
+			// else add the children of extracted node.
+			if (n->left != nullptr) {
+				q.push(n->left);
+			}
+			if (n->right != nullptr) {
+				q.push(n->right);
+			}
+		}
+	}
+	return (height - 1);
+}
+
 void Arbore_AVL::factor(Nod * root) {
 	std::queue<Nod*> q_nodes;
 
@@ -1092,8 +1129,8 @@ bool Arbore_AVL::delete_element(Nod * node) {
 
 void Arbore_AVL::construct(const std::vector<Nod*> &noduri) {
 	for (int i = 0; i < noduri.size(); i++) {
-		this->insert(noduri[i]);
-		//this->insert_repair(noduri[i]);
+		//this->insert(noduri[i]);
+		this->insert_repair(noduri[i]);
 	}
 }
 
@@ -1189,6 +1226,46 @@ void Arbore_AVL::sterge_random(std::vector<Nod*> listaNoduri) {
 	g.close();
 }
 
+//void rebalansare(Nod * sus, int factor) {
+//	switch (factor) {
+//		case -1:
+//			{
+//				std::cout << "Mai tb. urcat in arbore!\n";
+//				break;
+//			}
+//		case 1:
+//			{
+//				std::cout << "Mai tb. urcat in arbore!\n";
+//				break;
+//			}
+//		case -2:
+//			{
+//				std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
+//				//rotate_right(deReparat->info);
+//				break;
+//			}
+//		case 2:
+//			{
+//				std::cout << "Rotatie spre stanga in jurul parintelui.\n" << sus->info << ".\n";
+//				if (sus->right->getFactor() == -1) {
+//					rotate_right(sus->right->info);
+//					rotate_left(sus->info);
+//				}
+//				//rotate_left(deReparat->info);
+//				break;
+//			}
+//		case 0:
+//			{
+//				std::cout << "Arborele s-a echilibrat.\n";
+//				break;
+//			}
+//		default:
+//			{
+//				break;
+//			}
+//	}
+//}
+
 void Arbore_AVL::insert_repair(Nod* element) {
 
 	std::string path;
@@ -1209,8 +1286,18 @@ void Arbore_AVL::insert_repair(Nod* element) {
 
 	element->parent = y;
 
+	Nod * parinteNodInserat = nullptr;
+	Nod * nodulInserat = nullptr;
+
 	if (y == nullptr) {
 		this->root = element;
+		std::cout << "Nodul inserat este noua radacina.\n";
+		path.append("r");
+		std::cout << this->root->info << "\n";
+
+		nodulInserat = this->root;
+		parinteNodInserat = this->root;
+
 	} else {
 		if (element->info < y->info) {
 			y->left = element; //sau de aici imi pot da seama pe ce parte a fost inserat
@@ -1219,17 +1306,169 @@ void Arbore_AVL::insert_repair(Nod* element) {
 		}
 	}
 
+
 	std::cout << "Calea: ";
-	for(int i = 0; i < path.length(); i++) {
+	for (int i = 0; i < path.length(); i++) {
 		std::cout << path[i] << " ";
 	}
 	std::cout << "\n";
 
-	if(path[path.length() - 1] == 'L') {
+	if (path[path.length() - 1] == 'L') {
 		std::cout << "Nodul a fost inserat pe stanga.\n";
+		std::cout << y->left->info << "\n";
+
+		nodulInserat = y->left;
+		parinteNodInserat = y->left->parent;
 	}
 	if (path[path.length() - 1] == 'R') {
 		std::cout << "Nodul a fost inserat pe dreapta.\n";
+		std::cout << y->right->info << "\n";
+
+		nodulInserat = y->right;
+		parinteNodInserat = y->right->parent;
+	}
+
+	int h_before, h_after;
+	h_before = parinteNodInserat->getHeight();
+	std::cout << "Inaltimea before pentru: " << parinteNodInserat->info << ", " << parinteNodInserat->getHeight() << " ";
+	parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
+	h_after = parinteNodInserat->getHeight();
+	std::cout << "Inaltimea after pentru: " << parinteNodInserat->info << ", " << parinteNodInserat->getHeight();
+
+	std::cout << "\n";
+
+	int f_before, f_after;
+	f_before = parinteNodInserat->getFactor();
+	std::cout << "Factor before pentru: " << parinteNodInserat->info << ", " << parinteNodInserat->getFactor() << " ";
+	parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+	f_after = parinteNodInserat->getFactor();
+	std::cout << "Factor after pentru: " << parinteNodInserat->info << ", " << parinteNodInserat->getFactor();
+
+	std::cout << "\n";
+
+	Nod * sus = parinteNodInserat;
+
+	//if (f_after == 2) {
+	//	std::cout << "Rotatie spre stanga in jurul parintelui.\n" << sus->info << ".\n";
+	//}
+	//if (f_after == -2) {
+	//	std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
+	//}
+
+	if (f_after == -1) {
+		std::cout << "Arborele a crescut pe stanga.\n";
+
+		while (sus->parent) {
+			std::cout << "Suntem la " << sus->info << " urcam la " << sus->parent->info << ".\n";
+			sus = sus->parent;
+
+			std::cout << "Inaltimea before pentru: " << sus->info << ", " << sus->getHeight() << " ";
+			sus->setHeight(f_getHeight(sus));
+			h_after = sus->getHeight();
+			std::cout << "Inaltimea after pentru: " << sus->info << ", " << sus->getHeight();
+
+			std::cout << "Factor before pentru: " << sus->info << ", " << sus->getFactor() << " ";
+			sus->setFactor(balans_factor(sus));
+			f_after = sus->getFactor();
+			std::cout << "Factor after pentru: " << sus->info << ", " << sus->getFactor() << ".\n";
+
+			switch (f_after) {
+				case -1:
+					{
+						std::cout << "Mai tb. urcat in arbore!\n";
+						break;
+					}
+				case 1:
+					{
+						std::cout << "Mai tb. urcat in arbore!\n";
+						break;
+					}
+				case -2:
+					{
+						std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
+						//rotate_right(deReparat->info);
+						break;
+					}
+				case 2:
+					{
+						std::cout << "Rotatie spre stanga in jurul parintelui.\n" << sus->info << ".\n";
+						if (sus->right->getFactor() == -1) {
+							rotate_right(sus->right->info);
+							rotate_left(sus->info);
+						}
+						//rotate_left(deReparat->info);
+						break;
+					}
+				case 0:
+					{
+						if (f_after == 0) {
+							std::cout << "Arborele s-a echilibrat.\n";
+							break;
+						}
+					}
+				default:
+					{
+						break;
+					}
+			}
+		}
+
+	}
+
+	nodulInserat->setHeight(f_getHeight(nodulInserat));
+	nodulInserat->setFactor(balans_factor(nodulInserat));
+
+	sus->setHeight(f_getHeight(sus));
+	sus->setFactor(balans_factor(sus));
+
+	parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
+	parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+
+
+	if (f_after == 1) {
+		std::cout << "Arborele a crescut pe dreapta.\n";
+
+		while (sus->parent) {
+			std::cout << "Suntem la " << sus->info << " urcam la " << sus->parent->info << ".\n";
+			sus = sus->parent;
+
+			std::cout << "Inaltimea before pentru: " << sus->info << ", " << sus->getHeight() << " ";
+			sus->setHeight(f_getHeight(sus));
+			h_after = sus->getHeight();
+			std::cout << "Inaltimea after pentru: " << sus->info << ", " << sus->getHeight();
+
+			std::cout << "Factor before pentru: " << sus->info << ", " << sus->getFactor() << " ";
+			sus->setFactor(balans_factor(sus));
+			f_after = sus->getFactor();
+			std::cout << "Factor after pentru: " << sus->info << ", " << sus->getFactor() << ".\n";
+
+			if (f_after == -1) {
+				std::cout << "Mai tb. urcat in arbore!\n";
+			}
+			if (f_after == 1) {
+				std::cout << "Mai tb. urcat in arbore!\n";
+			}
+
+			if (f_after == 0) {
+				std::cout << "Arborele s-a echilibrat.\n";
+				break;
+			}
+
+		}
+
+	}
+
+	nodulInserat->setHeight(f_getHeight(nodulInserat));
+	nodulInserat->setFactor(balans_factor(nodulInserat));
+
+	sus->setHeight(f_getHeight(sus));
+	sus->setFactor(balans_factor(sus));
+
+	parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
+	parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+
+	if (f_after == 0) {
+		std::cout << "Arborele s-a echilibrat.\n";
 	}
 
 	this->size++;
@@ -1303,41 +1542,4 @@ void Arbore_AVL::print(unsigned short option) const {
 				break;
 			}
 	}
-}
-
-int getHeight(Nod * root) {
-
-	std::queue<Nod *> q;
-	int height = 0;
-
-	// add root to the queue
-	q.push(root);
-
-	// add null as marker
-	q.push(nullptr);
-
-	while (!q.empty()) {
-		Nod * n = q.front();
-		q.pop();
-		// check if n is null, if yes, we have reached to the end of the
-		// current level, increment the height by 1, and add the another
-		// null as marker for next level
-		if (n == nullptr) {
-			// before adding null, check if queue is empty, which means we
-			// have traveled all the levels
-			if (!q.empty()) {
-				q.push(nullptr);
-			}
-			height++;
-		} else {
-			// else add the children of extracted node.
-			if (n->left != nullptr) {
-				q.push(n->left);
-			}
-			if (n->right != nullptr) {
-				q.push(n->right);
-			}
-		}
-	}
-	return (height - 1);
 }
