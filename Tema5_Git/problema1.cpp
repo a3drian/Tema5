@@ -12,15 +12,15 @@ int main() {
 	std::vector<Nod*> listaNoduri;
 
 	//FROM FILE
-	//readFromFile(listaNoduri, cateNoduri);
-	//copac.construct(listaNoduri);
-	////copac.sterge_random(listaNoduri);
-	//imp("Arbore:");
-	////printTree(copac);
-	//copac.dump();
+	readFromFile(listaNoduri, cateNoduri);
+	copac.construct(listaNoduri);
+	//copac.sterge_random(listaNoduri);
+	imp("Arbore:");
+	//printTree(copac);
+	copac.dump();
 
 	//RANDOM
-	startOver(copac, listaNoduri, cateNoduri);
+	//startOver(copac, listaNoduri, cateNoduri);
 
 	while (true) {
 		menuText();
@@ -116,6 +116,15 @@ int main() {
 					logn("11. Redraw");
 
 					startOver(copac, listaNoduri, cateNoduri);
+
+					sout;
+					break;
+				}
+			case 12:
+				{
+					logn("12. Print SRD");
+
+					copac.print(3);
 
 					sout;
 					break;
