@@ -55,7 +55,7 @@ public:
 	void sterge_random(std::vector<Nod*>);
 
 	void insert_repair(Nod *);
-	void delete_repair(Nod *);
+	bool delete_repair(Nod *);
 	void rotate_right(int);
 	void rotate_left(int);
 
@@ -348,6 +348,11 @@ public:
 		for (int index = 0; index < rep; index++)
 			std::cout << ch;
 	}
+	void ShowCharToFile(const char *ch, int rep, std::ofstream &f) const
+	{
+		for (int index = 0; index < rep; index++)
+			f << ch;
+	}
 
 	void PrintLevelOrder(Nod *root) const
 	{
@@ -531,6 +536,174 @@ public:
 				}
 
 				std::cout << "\n";
+			}
+			leftSpacing = nextLevelSpacing;
+		}
+		delete[] previousLevelNodes;
+	}
+	void PrintLevelOrderToFile(Nod *root, std::ofstream &f) const
+	{
+		if (root == NULL)
+			return;
+
+		int depth = this->GetDepth(root) - 1;
+		int currentLevel = 0, nodeCount;		//Variabile care ne ajuta la parcurgerea pe nivel
+		int leftSpacing, nextLevelSpacing;		//Folositoare la formatarea textului
+		int previousLevelDim;
+		int numberSizeCorrector = 0, aux;
+
+		std::queue<LevelNode> myQueue;
+		LevelNode currentLevelNode, leftChild, rightChild;				//Variabile folosite la gasirea urmatoarelor noduri
+		LevelNode *previousLevelNodes = new LevelNode[pow(2, depth)];	//Vector care retine nodurile de pe nivelul anterior. Avem nevoie sa stim ce copii au.
+
+		leftSpacing = GetLeftSpacing(currentLevel, depth);
+
+		//Implementam primul nod
+		currentLevelNode.node = root;
+		currentLevelNode.leftSpacing = leftSpacing;
+		currentLevelNode.rightSpacing = currentLevelNode.leftSpacing + 3;
+		currentLevelNode.hasLeftchild = true;
+		currentLevelNode.hasRightChild = true;
+
+		myQueue.push(currentLevelNode);
+
+		while (myQueue.empty() == false)
+		{
+			nodeCount = myQueue.size();		//Retinem cate noduri avem pe nivel
+			previousLevelDim = 0;
+
+			nextLevelSpacing = GetLeftSpacing(currentLevel + 1, depth);
+
+			while (nodeCount > 0)
+			{
+				currentLevelNode = myQueue.front();
+				myQueue.pop();
+				previousLevelNodes[previousLevelDim] = currentLevelNode;	//Retinem nodul curent ca sa putem afisa muchiile dupa ce trecem la urmatorul nivel
+
+				numberSizeCorrector = 0;	//In caz ca numarul are prea multe zecimale trebuie sa corectam spatierea, iar datorita afisarii factorului trebuie mai multa corectura
+
+				ShowCharToFile(" ", currentLevelNode.leftSpacing, f);
+				if (currentLevelNode.node == nullptr)
+					f << " ";
+				else {
+					f << currentLevelNode.node->info;
+					aux = currentLevelNode.node->info;
+					while (aux / 10 != 0)
+					{
+						numberSizeCorrector++;
+						aux /= 10;
+					}
+				}
+				if (nodeCount != 1)
+					ShowCharToFile(" ", currentLevelNode.rightSpacing - numberSizeCorrector, f);
+
+				if (currentLevel <= depth)
+				{
+					//Left child
+					//Vrem sa aflam daca copilul stang exista sau nu. Deoarece e posibil ca nici tatal sa nu existe trebuie facute 2 comparari
+					if (currentLevelNode.node == nullptr)
+						leftChild.node = nullptr;
+					else
+						leftChild.node = currentLevelNode.node->left;
+
+					if (leftChild.node == nullptr)
+						previousLevelNodes[previousLevelDim].hasLeftchild = false;
+					else
+						previousLevelNodes[previousLevelDim].hasLeftchild = true;
+
+					leftChild.leftSpacing = nextLevelSpacing;
+					leftChild.rightSpacing = leftChild.leftSpacing + 3;
+
+					//Right child
+					//Vrem sa aflam daca copilul drept exista sau nu. Deoarece e posibil ca nici tatal sa nu existe trebuie facute 2 comparari
+					if (currentLevelNode.node == nullptr)
+						rightChild.node = nullptr;
+					else
+						rightChild.node = currentLevelNode.node->right;
+					if (rightChild.node == nullptr)
+						previousLevelNodes[previousLevelDim].hasRightChild = false;
+					else
+						previousLevelNodes[previousLevelDim].hasRightChild = true;
+
+					rightChild.leftSpacing = nextLevelSpacing;
+					rightChild.rightSpacing = rightChild.leftSpacing + 3;
+
+					//Adaugam toate nodurile in coada pana cand ajungem la ultimul nivel.
+					//Adaugam si noduri nule ca sa putem pastra afisarea uniforma, in cazul lor afisam spatierea si inca un spatiu in loc de valoare.
+					if (currentLevel != depth)
+					{
+						myQueue.push(leftChild);
+						myQueue.push(rightChild);
+					}
+
+					previousLevelDim++;
+				}
+
+				nodeCount--;
+			}
+			//Afisaza factorul de balansare
+			f << "\n";
+			for (int index = 0; index < previousLevelDim; index++)
+			{
+				numberSizeCorrector = 0;
+				ShowCharToFile(" ", previousLevelNodes[index].leftSpacing, f);
+				if (previousLevelNodes[index].node == nullptr)
+					f << " ";
+				else {
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14);
+					f << previousLevelNodes[index].node->getFactor();
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+					if (previousLevelNodes[index].node->getFactor() < 0)
+						numberSizeCorrector++;
+				}
+				if (index != previousLevelDim - 1);
+				ShowCharToFile(" ", previousLevelNodes[index].rightSpacing - numberSizeCorrector, f);
+			}
+
+			//Afisaza inaltimea
+			f << "\n";
+			for (int index = 0; index < previousLevelDim; index++)
+			{
+				numberSizeCorrector = 0;
+				ShowCharToFile(" ", previousLevelNodes[index].leftSpacing, f);
+				if (previousLevelNodes[index].node == nullptr)
+					f << " ";
+				else {
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+					f << previousLevelNodes[index].node->getHeight();
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+					if (previousLevelNodes[index].node->getHeight() < 0)
+						numberSizeCorrector++;
+				}
+				if (index != previousLevelDim - 1);
+				ShowCharToFile(" ", previousLevelNodes[index].rightSpacing - numberSizeCorrector, f);
+			}
+
+			f << "\n";
+			currentLevel++;
+			//Calculam cate linii ne trebuie sa afisam muchiile
+			for (int slashesIndex = 1; slashesIndex <= leftSpacing - nextLevelSpacing - 1; slashesIndex++)
+			{
+				//Pentru fiecare nod afisem muchiile cu spatiere si verificam daca are sau nu copil
+				for (int index = 0; index < previousLevelDim; index++)
+				{
+					ShowCharToFile(" ", leftSpacing - slashesIndex, f);
+
+					if (previousLevelNodes[index].hasLeftchild == true)
+						f << "/";
+					else
+						f << " ";
+					ShowCharToFile(" ", 2 * slashesIndex - 1, f);
+
+					if (previousLevelNodes[index].hasRightChild == true)
+						f << "\\";
+					else
+						f << " ";
+					if (index != previousLevelDim - 1)
+						ShowCharToFile(" ", leftSpacing + 3 - slashesIndex, f);
+				}
+
+				f << "\n";
 			}
 			leftSpacing = nextLevelSpacing;
 		}
@@ -1185,8 +1358,10 @@ void Arbore_AVL::emptyToFileRandom(std::ofstream &file, std::vector<Nod*> listaN
 		file << "Stergem pe ";
 		file << listaNoduri[i]->info;
 		file << "\n";
-		this->dumpToFile(file);
-		this->delete_element(listaNoduri[i]);
+		//this->dumpToFile(file);
+		this->PrintLevelOrderToFile(this->root, file);
+		//this->delete_element(listaNoduri[i]);
+		this->delete_repair(listaNoduri[i]);
 		file << "\n";
 	}
 
@@ -1209,7 +1384,8 @@ void Arbore_AVL::sterge_random(std::vector<Nod*> listaNoduri) {
 
 			g << "\n";
 
-			this->delete_element(listaNoduri[i]);
+			//this->delete_element(listaNoduri[i]);
+			this->delete_repair(listaNoduri[i]);
 
 			g << "L-am sters pe ";
 			g << listaNoduri[i]->info;
@@ -1357,181 +1533,12 @@ void Arbore_AVL::insert_repair(Nod* element) {
 
 		if (f_after == 0) {
 			std::cout << "Arborele s-a echilibrat.\n";
+			break;
 		}
 	}
 
-	/*
-	//if (f_after == 2) {
-	//	std::cout << "Rotatie spre stanga in jurul parintelui.\n" << sus->info << ".\n";
-	//}
-	//if (f_after == -2) {
-	//	std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
-	//}
-	*/
+	if (junc) {
 
-	/*
-	if (f_after == -1) {
-
-		std::cout << "Arborele a crescut pe stanga.\n";
-
-		while (sus->parent) {
-
-			std::cout << "Suntem la " << sus->info << " urcam la " << sus->parent->info << ".\n";
-			sus = sus->parent;
-
-			std::cout << "Inaltimea before pentru: " << sus->info << ", " << sus->getHeight() << " ";
-			sus->setHeight(f_getHeight(sus));
-			h_after = sus->getHeight();
-			std::cout << "Inaltimea after pentru: " << sus->info << ", " << h_after;
-
-			std::cout << "\n";
-
-			std::cout << "Factor before pentru: " << sus->info << ", " << sus->getFactor() << " ";
-			sus->setFactor(balans_factor(sus));
-			f_after = sus->getFactor();
-			std::cout << "Factor after pentru: " << sus->info << ", " << f_after << ".\n";
-
-			if (f_after == -1)
-			{
-				std::cout << "Mai tb. urcat in arbore!\n";
-			}
-			if (f_after == 1)
-			{
-				std::cout << "Mai tb. urcat in arbore!\n";
-			}
-
-			if (f_after == -2)
-			{
-				std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
-				if (sus->left->getFactor() == 1) { //sa vad daca trebuie sa repar cotul
-					rotate_left(sus->left->info);
-					rotate_right(sus->info);
-				}
-				if (sus->left->getFactor() == -1) { //inseamna ca toate cele 3 noduri sunt in linie
-					//inseamna ca trebuie o rotatie la dreapta in jurul, se face doar o rotatie spre dreapta
-					rotate_right(sus->info);
-				}
-
-			}
-			if (f_after == 2)
-			{
-				std::cout << "Rotatie spre stanga in jurul parintelui " << sus->info << ".\n";
-				if (sus->right->getFactor() == -1) { //sa vad daca trebuie sa repar cotul
-					rotate_right(sus->right->info);
-					rotate_left(sus->info);
-				}
-				if (sus->right->getFactor() == 1) { //inseamna ca toate cele 3 noduri sunt in linie
-					rotate_left(sus->info);
-				}
-			}
-
-			if (f_after == 0) {
-				std::cout << "Arborele s-a echilibrat.\n";
-			}
-		}
-
-	}
-	*/
-
-	/*
-	if (f_after == 1) {
-
-		std::cout << "Arborele a crescut pe dreapta.\n";
-
-		while (sus->parent) {
-
-			std::cout << "Suntem la " << sus->info << " urcam la " << sus->parent->info << ".\n";
-			sus = sus->parent;
-
-			std::cout << "Inaltimea before pentru: " << sus->info << ", " << sus->getHeight() << " ";
-			sus->setHeight(f_getHeight(sus));
-			h_after = sus->getHeight();
-			std::cout << "Inaltimea after pentru: " << sus->info << ", " << h_after;
-
-			std::cout << "\n";
-
-			std::cout << "Factor before pentru: " << sus->info << ", " << sus->getFactor() << " ";
-			sus->setFactor(balans_factor(sus));
-			f_after = sus->getFactor();
-			std::cout << "Factor after pentru: " << sus->info << ", " << f_after << ".\n";
-
-			if (f_after == -1)
-			{
-				std::cout << "Mai tb. urcat in arbore!\n";
-			}
-			if (f_after == 1)
-			{
-				std::cout << "Mai tb. urcat in arbore!\n";
-			}
-
-			if (f_after == 2)
-			{
-				std::cout << "Rotatie spre stanga in jurul parintelui " << sus->info << ".\n";
-				if (sus->right->getFactor() == -1) { //sa vad daca trebuie sa repar cotul
-					rotate_right(sus->right->info);
-					rotate_left(sus->info);
-				}
-				if (sus->right->getFactor() == 1) { //inseamna ca toate cele 3 noduri sunt in linie
-					rotate_left(sus->info);
-				}
-			}
-
-			if (f_after == -2)
-			{
-				std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
-				if (sus->left->getFactor() == 1) { //sa vad daca trebuie sa repar cotul
-					rotate_left(sus->left->info);
-					rotate_right(sus->info);
-				}
-				if (sus->left->getFactor() == -1) { //inseamna ca toate cele 3 noduri sunt in linie
-					//inseamna ca trebuie o rotatie la dreapta in jurul, se face doar o rotatie spre dreapta
-					rotate_right(sus->info);
-				}
-
-			}
-
-			if (f_after == 0) {
-				std::cout << "Arborele s-a echilibrat.\n";
-			}
-		}
-
-	}
-	*/
-
-	/*if (f_after == 1) {
-		std::cout << "Arborele a crescut pe dreapta.\n";
-
-		while (sus->parent) {
-			std::cout << "Suntem la " << sus->info << " urcam la " << sus->parent->info << ".\n";
-			sus = sus->parent;
-
-			std::cout << "Inaltimea before pentru: " << sus->info << ", " << sus->getHeight() << " ";
-			sus->setHeight(f_getHeight(sus));
-			h_after = sus->getHeight();
-			std::cout << "Inaltimea after pentru: " << sus->info << ", " << sus->getHeight();
-
-			std::cout << "Factor before pentru: " << sus->info << ", " << sus->getFactor() << " ";
-			sus->setFactor(balans_factor(sus));
-			f_after = sus->getFactor();
-			std::cout << "Factor after pentru: " << sus->info << ", " << sus->getFactor() << ".\n";
-
-			if (f_after == -1) {
-				std::cout << "Mai tb. urcat in arbore!\n";
-			}
-			if (f_after == 1) {
-				std::cout << "Mai tb. urcat in arbore!\n";
-			}
-
-			if (f_after == 0) {
-				std::cout << "Arborele s-a echilibrat.\n";
-				break;
-			}
-
-		}
-
-	}*/
-
-	if(junc) {
 		std::cout << "FINAL cu cot:\n"; //nodul inserat devine parintele celorlalte doua noduri
 
 		std::cout << "Factor sus:\t";
@@ -1562,21 +1569,166 @@ void Arbore_AVL::insert_repair(Nod* element) {
 		parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
 	}
 
-	/*
-	if (sus->left) {
-		std::cout << "Factor sus->left:\t";
-		sus->left->setHeight(f_getHeight(sus->left));
-		sus->left->setFactor(balans_factor(sus->left));
-	}
-
-	if(sus->right) {
-		std::cout << "Factor sus->right:\t";
-		sus->right->setHeight(f_getHeight(sus->right));
-		sus->right->setFactor(balans_factor(sus->right));
-	}
-	*/
-
 	this->size++;
+}
+
+bool Arbore_AVL::delete_repair(Nod* node) {
+	std::cout << "NEW METHOD\n";
+
+	if (node == nullptr) {
+		std::cout << "Nodul nu exista in arbore.\n";
+		return false;
+	}
+
+	bool frunzaLeft = false;
+	bool frunzaRight = false;
+	bool frunzaRadacina = false;
+
+	Nod * parinteNodSters = nullptr;
+
+	//CAZ 1 = z este frunza
+	//daca e frunza, putem sterge direct dupa ce aflam pe ce parte a parintelui este
+	{
+		if (node->isLeaf()) {
+			imp("frunza");
+			if (node->parent) {
+				if (node->parent->right == node) { //vine pe partea dreapta a parintelui
+
+					parinteNodSters = node->parent;
+					frunzaRight = true;
+
+					transplant(node->parent->right, node->right);
+
+					this->size--;
+
+				}
+				if (node->parent->left == node) {
+
+					parinteNodSters = node->parent;
+					frunzaLeft = true;
+
+					transplant(node->parent->left, node->left); //merge cu oricare al node (left/right) [ca inlocuim cu null]
+
+					this->size--;
+
+				}
+			} else { //daca stergem nodul radacina cand e frunza
+				transplant(this->root, this->root->left); //merge cu oricare al node (left/right)
+				frunzaRadacina = true;
+
+				this->size--;
+
+			}
+		}
+	}
+
+	if (frunzaLeft) {
+		std::cout << "Nodul a fost sters de pe partea stanga a parintelui.\n";
+		std::cout << "Incepem rebalansarea de la " << parinteNodSters->info << ".\n";
+		parinteNodSters->setHeight(f_getHeight(parinteNodSters));
+		parinteNodSters->setFactor(balans_factor(parinteNodSters));
+
+		if (parinteNodSters->getFactor() == 2) {
+			if (parinteNodSters->right->getFactor() == -1) {
+				rotate_right(parinteNodSters->right->info);
+				rotate_left(parinteNodSters->info);
+			}
+		}
+
+		Nod * sus = parinteNodSters->parent;
+
+		while (sus->parent) {
+			std::cout << "Am urcat mai sus la " << sus->info << ".\n";
+			sus->setHeight(f_getHeight(sus));
+			sus->setFactor(balans_factor(sus));
+
+			if (sus->getFactor() == 1 || sus->getFactor() == -1) { //arbore dezechilibrat pe o parte
+				std::cout << "Ne-am oprit la " << sus->info << " cu factorul " << sus->getFactor() << ".\n";
+				break;
+			}
+
+			sus = sus->parent;
+		}
+	}
+
+	if (frunzaRight) {
+		std::cout << "Nodul a fost sters de pe partea dreapta a parintelui.\n";
+		std::cout << "Incepem rebalansarea de la " << parinteNodSters->info << ".\n";
+		parinteNodSters->setHeight(f_getHeight(parinteNodSters));
+		parinteNodSters->setFactor(balans_factor(parinteNodSters));
+
+		if (parinteNodSters->getFactor() == -2) {
+			if (parinteNodSters->left->getFactor() == 1) {
+				rotate_left(parinteNodSters->left->info);
+				rotate_right(parinteNodSters->info);
+			}
+		}
+
+		Nod * sus = parinteNodSters->parent;
+
+		while (sus->parent) {
+			std::cout << "Am urcat mai sus la " << sus->info << ".\n";
+			sus->setHeight(f_getHeight(sus));
+			sus->setFactor(balans_factor(sus));
+
+			if (sus->getFactor() == 1 || sus->getFactor() == -1) { //arbore dezechilibrat pe o parte
+				std::cout << "Ne-am oprit la " << sus->info << " cu factorul " << sus->getFactor() << ".\n";
+				break;
+			}
+
+			sus = sus->parent;
+		}
+	}
+
+	if (frunzaRadacina) {
+		std::cout << "Nodul sters era o radacina frunza (singurul nod din arbore).\n";
+	}
+
+	//CAZ 2 = z are un singur fiu nenul
+	//daca nu e frunza si are 1 fiu
+	{
+		if (node->hasOneSon()) {
+			imp("1 fiu");
+			if (node->left == nullptr) {
+				transplant(node, node->right);
+
+				this->size--;
+
+			}
+			if (node->right == nullptr) {
+				transplant(node, node->left);
+
+				this->size--;
+
+			}
+		}
+	}
+
+	//CAZ 3 = z are ambii fii nenuli
+	//daca nu e frunza si are 2 fii, cautam succesorul, facem transplant si refacem legaturile
+	{
+		if (node->hasTwoSons()) {
+			imp("2 fii");
+
+			Nod * y = this->succesor(node->info);
+			if (y == node->right) { //succesorul este descendentul direct
+				transplant(node, y);
+				this->size--;
+
+			}
+
+			if (y != node->right) { //succesorul nu este descendentul direct
+				imp("succesorul nu e descendent direct");
+
+				transplant(y, y->right);
+
+				transplant(node, y);
+
+				this->size--;
+
+			}
+		}
+	}
 }
 
 void printBT(const std::string & prefix, Nod * nod, bool isLeft) {
