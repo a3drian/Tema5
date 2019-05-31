@@ -1300,13 +1300,21 @@ void Arbore_AVL::insert_repair(Nod* element) {
 
 	} else {
 		if (element->info < y->info) {
+
 			y->left = element; //sau de aici imi pot da seama pe ce parte a fost inserat
+
+			nodulInserat = y->left;
+			parinteNodInserat = y->left->parent;
 		} else {
+
 			y->right = element;
+
+			nodulInserat = y->right;
+			parinteNodInserat = y->right->parent;
 		}
 	}
 
-
+	/*
 	std::cout << "Calea: ";
 	for (int i = 0; i < path.length(); i++) {
 		std::cout << path[i] << " ";
@@ -1327,6 +1335,7 @@ void Arbore_AVL::insert_repair(Nod* element) {
 		nodulInserat = y->right;
 		parinteNodInserat = y->right->parent;
 	}
+	*/
 
 	int h_before, h_after;
 	h_before = parinteNodInserat->getHeight();
@@ -1348,13 +1357,78 @@ void Arbore_AVL::insert_repair(Nod* element) {
 
 	Nod * sus = parinteNodInserat;
 
+	while (sus->parent) {
+
+		std::cout << "Suntem la " << sus->info << " urcam la " << sus->parent->info << ".\n";
+		sus = sus->parent;
+
+		std::cout << "Inaltimea before pentru: " << sus->info << ", " << sus->getHeight() << " ";
+		sus->setHeight(f_getHeight(sus));
+		h_after = sus->getHeight();
+		std::cout << "Inaltimea after pentru: " << sus->info << ", " << h_after;
+
+		std::cout << "\n";
+
+		std::cout << "Factor before pentru: " << sus->info << ", " << sus->getFactor() << " ";
+		sus->setFactor(balans_factor(sus));
+		f_after = sus->getFactor();
+		std::cout << "Factor after pentru: " << sus->info << ", " << f_after << ".\n";
+
+		if (f_after == -1)
+		{
+			std::cout << "Mai tb. urcat in arbore!\n";
+		}
+		if (f_after == 1)
+		{
+			std::cout << "Mai tb. urcat in arbore!\n";
+		}
+
+		if (f_after == -2)
+		{
+			std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
+			if (sus->left->getFactor() == 1) { //sa vad daca trebuie sa repar cotul
+				rotate_left(sus->left->info);
+				rotate_right(sus->info);
+				break;
+			}
+			if (sus->left->getFactor() == -1) { //inseamna ca toate cele 3 noduri sunt in linie
+				//inseamna ca trebuie o rotatie la dreapta in jurul, se face doar o rotatie spre dreapta
+				rotate_right(sus->info);
+				break;
+			}
+
+		}
+
+		if (f_after == 2)
+		{
+			std::cout << "Rotatie spre stanga in jurul parintelui " << sus->info << ".\n";
+			if (sus->right->getFactor() == -1) { //sa vad daca trebuie sa repar cotul
+				rotate_right(sus->right->info);
+				rotate_left(sus->info);
+				break;
+			}
+			if (sus->right->getFactor() == 1) { //inseamna ca toate cele 3 noduri sunt in linie
+				rotate_left(sus->info);
+				break;
+			}
+
+		}
+
+		if (f_after == 0) {
+			std::cout << "Arborele s-a echilibrat.\n";
+		}
+	}
+
+	/*
 	//if (f_after == 2) {
 	//	std::cout << "Rotatie spre stanga in jurul parintelui.\n" << sus->info << ".\n";
 	//}
 	//if (f_after == -2) {
 	//	std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
 	//}
+	*/
 
+	/*
 	if (f_after == -1) {
 
 		std::cout << "Arborele a crescut pe stanga.\n";
@@ -1391,14 +1465,12 @@ void Arbore_AVL::insert_repair(Nod* element) {
 				if (sus->left->getFactor() == 1) { //sa vad daca trebuie sa repar cotul
 					rotate_left(sus->left->info);
 					rotate_right(sus->info);
-					break;
 				}
 				if (sus->left->getFactor() == -1) { //inseamna ca toate cele 3 noduri sunt in linie
 					//inseamna ca trebuie o rotatie la dreapta in jurul, se face doar o rotatie spre dreapta
 					rotate_right(sus->info);
-					break;
 				}
-				
+
 			}
 			if (f_after == 2)
 			{
@@ -1406,11 +1478,9 @@ void Arbore_AVL::insert_repair(Nod* element) {
 				if (sus->right->getFactor() == -1) { //sa vad daca trebuie sa repar cotul
 					rotate_right(sus->right->info);
 					rotate_left(sus->info);
-					break;
 				}
 				if (sus->right->getFactor() == 1) { //inseamna ca toate cele 3 noduri sunt in linie
 					rotate_left(sus->info);
-					break;
 				}
 			}
 
@@ -1420,7 +1490,9 @@ void Arbore_AVL::insert_repair(Nod* element) {
 		}
 
 	}
+	*/
 
+	/*
 	if (f_after == 1) {
 
 		std::cout << "Arborele a crescut pe dreapta.\n";
@@ -1451,28 +1523,30 @@ void Arbore_AVL::insert_repair(Nod* element) {
 				std::cout << "Mai tb. urcat in arbore!\n";
 			}
 
-			if (f_after == -2)
-			{
-				std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
-				if (sus->left->getFactor() == 1) { //sa vad daca trebuie sa repar cotul
-					rotate_left(sus->left->info);
-					rotate_right(sus->info);
-				} else if (sus->left->getFactor() == -1) { //inseamna ca toate cele 3 noduri sunt in linie
-					//inseamna ca trebuie o rotatie la dreapta in jurul, se face doar o rotatie spre dreapta
-					rotate_right(sus->info);
-				}
-
-			}
-
 			if (f_after == 2)
 			{
 				std::cout << "Rotatie spre stanga in jurul parintelui " << sus->info << ".\n";
 				if (sus->right->getFactor() == -1) { //sa vad daca trebuie sa repar cotul
 					rotate_right(sus->right->info);
 					rotate_left(sus->info);
-				} else if (sus->right->getFactor() == 1) { //inseamna ca toate cele 3 noduri sunt in linie
+				}
+				if (sus->right->getFactor() == 1) { //inseamna ca toate cele 3 noduri sunt in linie
 					rotate_left(sus->info);
 				}
+			}
+
+			if (f_after == -2)
+			{
+				std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
+				if (sus->left->getFactor() == 1) { //sa vad daca trebuie sa repar cotul
+					rotate_left(sus->left->info);
+					rotate_right(sus->info);
+				}
+				if (sus->left->getFactor() == -1) { //inseamna ca toate cele 3 noduri sunt in linie
+					//inseamna ca trebuie o rotatie la dreapta in jurul, se face doar o rotatie spre dreapta
+					rotate_right(sus->info);
+				}
+
 			}
 
 			if (f_after == 0) {
@@ -1481,6 +1555,7 @@ void Arbore_AVL::insert_repair(Nod* element) {
 		}
 
 	}
+	*/
 
 	/*if (f_after == 1) {
 		std::cout << "Arborele a crescut pe dreapta.\n";
@@ -1518,15 +1593,11 @@ void Arbore_AVL::insert_repair(Nod* element) {
 	nodulInserat->setHeight(f_getHeight(nodulInserat));
 	nodulInserat->setFactor(balans_factor(nodulInserat));
 
-	sus->setHeight(f_getHeight(sus));
-	sus->setFactor(balans_factor(sus));
-
 	parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
 	parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
 
-	if (f_after == 0) {
-		std::cout << "Arborele s-a echilibrat.\n";
-	}
+	sus->setHeight(f_getHeight(sus));
+	sus->setFactor(balans_factor(sus));
 
 	this->size++;
 }
