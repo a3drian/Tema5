@@ -501,6 +501,10 @@ void Arbore_AVL::rotate_left(int key) {
 	}
 }
 
+void Arbore_AVL::merge(Arbore_AVL copac){
+	Nod * maxim = copac.maxim(copac.root);
+}
+
 void Arbore_AVL::rotate_right(int key) {
 
 	Nod * x = this->search(key);
