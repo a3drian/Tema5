@@ -801,7 +801,6 @@ void Arbore_AVL::factor(Nod * root) {
 	}
 }
 
-
 unsigned short Arbore_AVL::getSize() const {
 	return this->size;
 }
@@ -1226,46 +1225,6 @@ void Arbore_AVL::sterge_random(std::vector<Nod*> listaNoduri) {
 	g.close();
 }
 
-//void rebalansare(Nod * sus, int factor) {
-//	switch (factor) {
-//		case -1:
-//			{
-//				std::cout << "Mai tb. urcat in arbore!\n";
-//				break;
-//			}
-//		case 1:
-//			{
-//				std::cout << "Mai tb. urcat in arbore!\n";
-//				break;
-//			}
-//		case -2:
-//			{
-//				std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
-//				//rotate_right(deReparat->info);
-//				break;
-//			}
-//		case 2:
-//			{
-//				std::cout << "Rotatie spre stanga in jurul parintelui.\n" << sus->info << ".\n";
-//				if (sus->right->getFactor() == -1) {
-//					rotate_right(sus->right->info);
-//					rotate_left(sus->info);
-//				}
-//				//rotate_left(deReparat->info);
-//				break;
-//			}
-//		case 0:
-//			{
-//				std::cout << "Arborele s-a echilibrat.\n";
-//				break;
-//			}
-//		default:
-//			{
-//				break;
-//			}
-//	}
-//}
-
 void Arbore_AVL::insert_repair(Nod* element) {
 
 	Nod * x = this->root;
@@ -1660,6 +1619,42 @@ void SRD(Nod* root) {
 	//}
 }
 
+void printLevelByLevel(Nod * root) {
+	std::queue<Nod *> q;
+
+	// add root to the queue
+	q.push(root);
+
+	// add null as marker
+	q.push(nullptr);
+
+	while (!q.empty()) {
+
+		Nod * n = q.front();
+
+		q.pop();
+		// check if n is null, if yes, we have reached to the end of the
+		// current level, increment the height by 1, and add the another
+		// null as marker for next level
+		if (n == nullptr) {
+			// before adding null, check if queue is empty, which means we
+			// have traveled all the levels
+			if (!q.empty()) {
+				q.push(nullptr);
+			}
+		} else {
+			std::cout << n->info << " ";
+			// else add the children of extracted node.
+			if (n->left != nullptr) {
+				q.push(n->left);
+			}
+			if (n->right != nullptr) {
+				q.push(n->right);
+			}
+		}
+	}
+}
+
 void Arbore_AVL::print(unsigned short option) const {
 	switch (option) {
 		case 1:
@@ -1677,7 +1672,7 @@ void Arbore_AVL::print(unsigned short option) const {
 			}
 		case 3:
 			{
-				SRD(this->root);
+				printLevelByLevel(this->root);
 				std::cout << "\n";
 				break;
 			}
