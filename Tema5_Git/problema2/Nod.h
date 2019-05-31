@@ -26,6 +26,7 @@ public:
 	int factor;
 
 	Nod(int key = 0) {
+
 		this->info = key;
 		this->left = nullptr;
 		this->right = nullptr;
@@ -91,12 +92,6 @@ public:
 		const int left_depth = left ? left->max_depth() : 0;
 		const int right_depth = right ? right->max_depth() : 0;
 		return (left_depth > right_depth ? left_depth : right_depth) + 1;
-	}
-
-	int max_dep() const {
-		const int left_depth = left ? left->max_depth() : 0;
-		const int right_depth = right ? right->max_depth() : 0;
-		return (left_depth > right_depth ? left_depth : right_depth);
 	}
 
 	bool wasVisited(){

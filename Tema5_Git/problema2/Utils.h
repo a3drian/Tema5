@@ -15,7 +15,8 @@ void menuText() {
 	//logn("6. Predecesor");
 	logn("7. Insereaza");
 	logn("8. Printeaza");
-	logn("9. Goleste");
+	//logn("9. Goleste");
+	logn("9. SETEAZA INALTIME SI FACTOR");
 	logn("10. Goleste aleator in fisier");
 	logn("11. Redraw");
 
@@ -41,7 +42,8 @@ void sterge(Arbore_AVL &copac) {
 		std::cin >> x;
 
 		Nod * deSters = copac.search(x);
-		copac.delete_element(deSters);
+		//copac.delete_element(deSters);
+		copac.delete_repair(deSters);
 	} else {
 		logn("Arborele este gol.");
 	}
@@ -97,7 +99,7 @@ void predec(const Arbore_AVL &copac) {
 	}
 }
 
-void insereaza(Arbore_AVL &copac) {
+void insereaza(Arbore_AVL &copac, std::vector<Nod*> &listaNoduri, int &contor) {
 	int x;
 	std::cout << "Valoare nod: ";
 	std::cin >> x;
@@ -105,6 +107,12 @@ void insereaza(Arbore_AVL &copac) {
 	Nod * leaf = new Nod(x);
 	//copac.insert(leaf);
 	copac.insert_repair(leaf);
+
+	listaNoduri[contor] = leaf;
+	contor++;
+
+	sout;
+	copac.print(6);
 }
 
 void drawRandom(std::vector<Nod*> &listaNoduri, const int &cateNoduri) {
@@ -141,14 +149,24 @@ void rot_dr(Arbore_AVL &copac) {
 }
 
 void startOver(Arbore_AVL &copac, std::vector<Nod*> &listaNoduri, int &cateNoduri) {
+	std::ofstream file("problema2/output.in");
+
 	std::cout << "Numarul de noduri pentru arborele generat aleator: ";
 	std::cin >> cateNoduri;
+
+	if(copac.getSize() > 0) {
+		//copac.empty();
+		copac.emptyToFile(file);
+	}
+
+	listaNoduri = std::vector <Nod*>(cateNoduri);
 	drawRandom(listaNoduri, cateNoduri);
 
 	copac.construct(listaNoduri);
 
 	imp("Arborele generat aleator:");
-	copac.dump();
+	//copac.dump();
+	copac.print(6);
 	sout;
 
 	while (true) {
@@ -156,10 +174,12 @@ void startOver(Arbore_AVL &copac, std::vector<Nod*> &listaNoduri, int &cateNodur
 		unsigned short y;
 		std::cin >> y;
 		if (y == 1) {
+			listaNoduri = std::vector <Nod*>(cateNoduri);
 			drawRandom(listaNoduri, cateNoduri);
-			copac.empty();
+			//copac.empty();
+			copac.emptyToFile(file);
 			copac.construct(listaNoduri);
-			copac.dump();
+			copac.print(6);
 		} else {
 			break;
 		}
@@ -191,7 +211,7 @@ void printTree(Arbore_AVL copac) {
 
 	if (!copac.isEmpty()) {
 		std::string prefix = "";
-		printBT(prefix, copac.root, false);
+		//printBT(prefix, copac.root, false);
 		sout;
 	} else {
 		logn("Arborele este gol.");

@@ -9,18 +9,29 @@ int main() {
 
 	int cateNoduri;
 	std::vector<Nod*> listaNoduri;
+	int contor;
 
 	//FROM FILE
 	readFromFile(listaNoduri, cateNoduri);
+	contor = cateNoduri - 1;
 	copac.construct(listaNoduri);
-	//copac.sterge_random(listaNoduri);
+	//copac.emptyRandom(listaNoduri);
 	imp("Arbore:");
 	//printTree(copac);
-	copac.dump();
+	//copac.dump();
+	copac.print(6);
 	sout;
 
 	//RANDOM
 	//startOver(copac, listaNoduri, cateNoduri);
+	//contor = cateNoduri - 1;
+
+	//ONE BY ONE
+	////std::cout << "Numar maxim noduri: ";
+	////std::cin >> cateNoduri;
+	//contor = 0;
+	//cateNoduri = 100;
+	//listaNoduri = std::vector<Nod*>(cateNoduri);
 
 	while (true) {
 		menuText();
@@ -45,6 +56,7 @@ int main() {
 				{
 					logn("2. Sterge");
 					sterge(copac);
+					copac.print(6);
 					sout;
 					break;
 				}
@@ -81,7 +93,7 @@ int main() {
 			case 7:
 				{
 					logn("7. Insereaza");
-					insereaza(copac);
+					insereaza(copac, listaNoduri, contor);
 					sout;
 					break;
 				}
@@ -89,7 +101,7 @@ int main() {
 				{
 					logn("8. Printeaza");
 
-					copac.print(4);
+					copac.print(6);
 					//copac.dump();
 
 					sout;
@@ -99,6 +111,8 @@ int main() {
 				{
 					//logn("9. Inaltimea");
 					logn("9. SETEAZA INALTIME SI FACTOR");
+
+					cateNoduri = copac.getSize();
 
 					for (int i = 0; i < cateNoduri; i++) {
 						//listaNoduri[i]->setHeight(listaNoduri[i]->max_dep());
@@ -121,7 +135,7 @@ int main() {
 					if (copac.getSize() == cateNoduri) {
 						copac.emptyToFileRandom(file, listaNoduri);
 					} else {
-						logn("Nu se poate sterge aleator din fisier.");
+						logn("Nu se poate sterge aleator in fisier.");
 					}
 
 					sout;

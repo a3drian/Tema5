@@ -625,23 +625,23 @@ void Arbore_AVL::adancime(Nod * root) {
 
 int balans_factor(Nod * temp) {
 
-	std::cout << "Factor de balansare pt. nodul " << temp->info << " ";
+	//std::cout << "Factor de balansare pt. nodul " << temp->info << " ";
 
 	int factor = 0;
 
 	if (temp->right == nullptr) {
 
-		std::cout << "[0] - " << temp->getHeight() << ".\n";
+		//std::cout << "[0] - " << temp->getHeight() << ".\n";
 		factor = 0 - temp->getHeight();
 
 	} else if (temp->left == nullptr) {
 
-		std::cout << temp->getHeight() << " - [0]" << ".\n";
+		//std::cout << temp->getHeight() << " - [0]" << ".\n";
 		factor = temp->getHeight() - 0;
 
 	} else {
 
-		std::cout << temp->right->getHeight() << " - " << temp->left->getHeight() << ".\n";
+		//std::cout << temp->right->getHeight() << " - " << temp->left->getHeight() << ".\n";
 		factor = temp->right->getHeight() - temp->left->getHeight();
 
 	}
@@ -1079,19 +1079,19 @@ void Arbore_AVL::insert_repair(Nod * element) {
 
 	int h_before, h_after;
 	h_before = parinteNodInserat->getHeight();
-	std::cout << "Inaltimea before pentru: " << parinteNodInserat->info << ", " << h_before << " ";
+	//std::cout << "Inaltimea before pentru: " << parinteNodInserat->info << ", " << h_before << " ";
 	parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
 	h_after = parinteNodInserat->getHeight();
-	std::cout << "Inaltimea after pentru: " << parinteNodInserat->info << ", " << h_after;
+	//std::cout << "Inaltimea after pentru: " << parinteNodInserat->info << ", " << h_after;
 
 	std::cout << "\n";
 
 	int f_before, f_after;
 	f_before = parinteNodInserat->getFactor();
-	std::cout << "Factor before pentru: " << parinteNodInserat->info << ", " << f_before << " ";
+	//std::cout << "Factor before pentru: " << parinteNodInserat->info << ", " << f_before << " ";
 	parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
 	f_after = parinteNodInserat->getFactor();
-	std::cout << "Factor after pentru: " << parinteNodInserat->info << ", " << f_after;
+	//std::cout << "Factor after pentru: " << parinteNodInserat->info << ", " << f_after;
 
 	std::cout << "\n";
 
@@ -1101,22 +1101,20 @@ void Arbore_AVL::insert_repair(Nod * element) {
 
 	while (sus->parent) {
 
-		//this->print(6);
-
 		std::cout << "Suntem la " << sus->info << " urcam la " << sus->parent->info << ".\n";
 		sus = sus->parent;
 
-		std::cout << "Inaltimea before pentru: " << sus->info << ", " << sus->getHeight() << " ";
+		//std::cout << "Inaltimea before pentru: " << sus->info << ", " << sus->getHeight() << " ";
 		sus->setHeight(f_getHeight(sus));
 		h_after = sus->getHeight();
-		std::cout << "Inaltimea after pentru: " << sus->info << ", " << h_after;
+		//std::cout << "Inaltimea after pentru: " << sus->info << ", " << h_after;
 
 		std::cout << "\n";
 
-		std::cout << "Factor before pentru: " << sus->info << ", " << sus->getFactor() << " ";
+		//std::cout << "Factor before pentru: " << sus->info << ", " << sus->getFactor() << " ";
 		sus->setFactor(balans_factor(sus));
 		f_after = sus->getFactor();
-		std::cout << "Factor after pentru: " << sus->info << ", " << f_after << ".\n";
+		//std::cout << "Factor after pentru: " << sus->info << ", " << f_after << ".\n";
 
 		if (f_after == -1)
 		{
@@ -1172,32 +1170,32 @@ void Arbore_AVL::insert_repair(Nod * element) {
 
 	if (junc) {
 
-		std::cout << "FINAL cu cot:\n"; //nodul inserat devine parintele celorlalte doua noduri
+		//std::cout << "FINAL cu cot:\n"; //nodul inserat devine parintele celorlalte doua noduri
 
-		std::cout << "Factor sus:\t";
+		//std::cout << "Factor sus:\t";
 		sus->setHeight(f_getHeight(sus));
 		sus->setFactor(balans_factor(sus));
 
-		std::cout << "Factor parinte:\t";
+		//std::cout << "Factor parinte:\t";
 		parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
 		parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
 
-		std::cout << "Factor nod:\t";
+		//std::cout << "Factor nod:\t";
 		nodulInserat->setHeight(f_getHeight(nodulInserat));
 		nodulInserat->setFactor(balans_factor(nodulInserat));
 
 	} else {
-		std::cout << "FINAL fara cot:\n"; //nodul inserat ramane copil
+		//std::cout << "FINAL fara cot:\n"; //nodul inserat ramane copil
 
-		std::cout << "Factor sus:\t";
+		//std::cout << "Factor sus:\t";
 		sus->setHeight(f_getHeight(sus));
 		sus->setFactor(balans_factor(sus));
 
-		std::cout << "Factor nod:\t";
+		//std::cout << "Factor nod:\t";
 		nodulInserat->setHeight(f_getHeight(nodulInserat));
 		nodulInserat->setFactor(balans_factor(nodulInserat));
 
-		std::cout << "Factor parinte:\t";
+		//std::cout << "Factor parinte:\t";
 		parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
 		parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
 	}
@@ -1207,9 +1205,11 @@ void Arbore_AVL::insert_repair(Nod * element) {
 
 void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 
-	if(parinteNodSters == nullptr) {
+	if (parinteNodSters == nullptr) {
 		return;
 	}
+
+	this->print(6);
 
 	parinteNodSters->setHeight(f_getHeight(parinteNodSters));
 	parinteNodSters->setFactor(balans_factor(parinteNodSters));
@@ -1263,7 +1263,7 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 				rotate_left(sus->info);
 				break;
 			}
-			if(sus->right->getFactor() == 0) {
+			if (sus->right->getFactor() == 0) {
 				rotate_left(sus->info);
 				break;
 			}
@@ -1271,6 +1271,9 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 
 		sus = sus->parent;
 	}
+
+	parinteNodSters->setHeight(f_getHeight(parinteNodSters));
+	parinteNodSters->setFactor(balans_factor(parinteNodSters));
 }
 
 bool Arbore_AVL::delete_repair(Nod* node) {
@@ -1280,8 +1283,8 @@ bool Arbore_AVL::delete_repair(Nod* node) {
 		return false;
 	}
 
-	std::cout << "NEW METHOD++++++++++++++++++";
-	std::cout << " il stergem pe " << node->info << "++++++++++++++++++\n";
+	std::cout << "++++++++++++++++++";
+	std::cout << "il stergem pe " << node->info << "++++++++++++++++++\n";
 
 	//CAZ 1 = z este frunza
 	//daca e frunza, putem sterge direct dupa ce aflam pe ce parte a parintelui este
@@ -1357,7 +1360,7 @@ bool Arbore_AVL::delete_repair(Nod* node) {
 
 			Nod * parinteNodSters = nullptr;
 
-			if(node == this->root) {		
+			if (node == this->root) {
 				parinteNodSters = node;
 				radacina = true;
 			}
@@ -1383,7 +1386,7 @@ bool Arbore_AVL::delete_repair(Nod* node) {
 
 			}
 
-			if(radacina) {
+			if (radacina) {
 				std::cout << "Nodul devine radacina.\n";
 				balansare_delete(parinteNodSters);
 				return true;
@@ -1410,14 +1413,8 @@ bool Arbore_AVL::delete_repair(Nod* node) {
 			imp("2 fii");
 
 			bool descendentDirect = false;
-			bool radacina = false;
 
 			Nod * parinteNodSters = nullptr;
-
-			if (node == this->root) {
-				parinteNodSters = node;
-				radacina = true;
-			}
 
 			Nod * y = this->succesor(node->info);
 			if (y == node->right) { //succesorul este descendentul direct
@@ -1434,7 +1431,7 @@ bool Arbore_AVL::delete_repair(Nod* node) {
 				imp("succesorul nu e descendent direct");
 
 				descendentDirect = false;
-				parinteNodSters = node->right;
+				parinteNodSters = y;
 
 				transplant(y, y->right);
 
@@ -1442,12 +1439,6 @@ bool Arbore_AVL::delete_repair(Nod* node) {
 
 				this->size--;
 
-			}
-
-			if (radacina) {
-				std::cout << "Nodul devine radacina.\n";				
-				balansare_delete(parinteNodSters);
-				return true;
 			}
 
 			if (descendentDirect) {
