@@ -1268,18 +1268,14 @@ void Arbore_AVL::sterge_random(std::vector<Nod*> listaNoduri) {
 
 void Arbore_AVL::insert_repair(Nod* element) {
 
-	std::string path;
-
 	Nod * x = this->root;
 	Nod * y = nullptr;
 
 	while (x != nullptr) {
 		y = x;
 		if (element->info < x->info) {
-			path.append("L");
 			x = x->left;
 		} else {
-			path.append("R");
 			x = x->right;
 		}
 	}
@@ -1292,7 +1288,6 @@ void Arbore_AVL::insert_repair(Nod* element) {
 	if (y == nullptr) {
 		this->root = element;
 		std::cout << "Nodul inserat este noua radacina.\n";
-		path.append("r");
 		std::cout << this->root->info << "\n";
 
 		nodulInserat = this->root;
@@ -1314,29 +1309,6 @@ void Arbore_AVL::insert_repair(Nod* element) {
 		}
 	}
 
-	/*
-	std::cout << "Calea: ";
-	for (int i = 0; i < path.length(); i++) {
-		std::cout << path[i] << " ";
-	}
-	std::cout << "\n";
-
-	if (path[path.length() - 1] == 'L') {
-		std::cout << "Nodul a fost inserat pe stanga.\n";
-		std::cout << y->left->info << "\n";
-
-		nodulInserat = y->left;
-		parinteNodInserat = y->left->parent;
-	}
-	if (path[path.length() - 1] == 'R') {
-		std::cout << "Nodul a fost inserat pe dreapta.\n";
-		std::cout << y->right->info << "\n";
-
-		nodulInserat = y->right;
-		parinteNodInserat = y->right->parent;
-	}
-	*/
-
 	int h_before, h_after;
 	h_before = parinteNodInserat->getHeight();
 	std::cout << "Inaltimea before pentru: " << parinteNodInserat->info << ", " << h_before << " ";
@@ -1357,7 +1329,11 @@ void Arbore_AVL::insert_repair(Nod* element) {
 
 	Nod * sus = parinteNodInserat;
 
+	bool junc = false;
+
 	while (sus->parent) {
+
+		//this->print(4);
 
 		std::cout << "Suntem la " << sus->info << " urcam la " << sus->parent->info << ".\n";
 		sus = sus->parent;
@@ -1387,8 +1363,11 @@ void Arbore_AVL::insert_repair(Nod* element) {
 		{
 			std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
 			if (sus->left->getFactor() == 1) { //sa vad daca trebuie sa repar cotul
+
 				rotate_left(sus->left->info);
 				rotate_right(sus->info);
+				junc = true;
+
 				break;
 			}
 			if (sus->left->getFactor() == -1) { //inseamna ca toate cele 3 noduri sunt in linie
@@ -1403,8 +1382,11 @@ void Arbore_AVL::insert_repair(Nod* element) {
 		{
 			std::cout << "Rotatie spre stanga in jurul parintelui " << sus->info << ".\n";
 			if (sus->right->getFactor() == -1) { //sa vad daca trebuie sa repar cotul
+
 				rotate_right(sus->right->info);
 				rotate_left(sus->info);
+				junc = true;
+
 				break;
 			}
 			if (sus->right->getFactor() == 1) { //inseamna ca toate cele 3 noduri sunt in linie
@@ -1590,14 +1572,50 @@ void Arbore_AVL::insert_repair(Nod* element) {
 
 	}*/
 
-	nodulInserat->setHeight(f_getHeight(nodulInserat));
-	nodulInserat->setFactor(balans_factor(nodulInserat));
+	if(junc) {
+		std::cout << "FINAL cu cot:\n"; //nodul inserat devine parintele celorlalte doua noduri
 
-	parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
-	parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+		std::cout << "Factor sus:\t";
+		sus->setHeight(f_getHeight(sus));
+		sus->setFactor(balans_factor(sus));
 
-	sus->setHeight(f_getHeight(sus));
-	sus->setFactor(balans_factor(sus));
+		std::cout << "Factor parinte:\t";
+		parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
+		parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+
+		std::cout << "Factor nod:\t";
+		nodulInserat->setHeight(f_getHeight(nodulInserat));
+		nodulInserat->setFactor(balans_factor(nodulInserat));
+
+	} else {
+		std::cout << "FINAL fara cot:\n"; //nodul inserat ramane copil
+
+		std::cout << "Factor sus:\t";
+		sus->setHeight(f_getHeight(sus));
+		sus->setFactor(balans_factor(sus));
+
+		std::cout << "Factor nod:\t";
+		nodulInserat->setHeight(f_getHeight(nodulInserat));
+		nodulInserat->setFactor(balans_factor(nodulInserat));
+
+		std::cout << "Factor parinte:\t";
+		parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
+		parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+	}
+
+	/*
+	if (sus->left) {
+		std::cout << "Factor sus->left:\t";
+		sus->left->setHeight(f_getHeight(sus->left));
+		sus->left->setFactor(balans_factor(sus->left));
+	}
+
+	if(sus->right) {
+		std::cout << "Factor sus->right:\t";
+		sus->right->setHeight(f_getHeight(sus->right));
+		sus->right->setFactor(balans_factor(sus->right));
+	}
+	*/
 
 	this->size++;
 }
