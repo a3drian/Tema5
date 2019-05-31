@@ -54,8 +54,12 @@ public:
 
 	void sterge_random(std::vector<Nod*>);
 
+	void balansare_insert(Nod* parinteNodSters);
 	void insert_repair(Nod *);
+
+	void balansare_delete(Nod* parinteNodSters);
 	bool delete_repair(Nod *);
+
 	void rotate_right(int);
 	void rotate_left(int);
 
@@ -1401,6 +1405,10 @@ void Arbore_AVL::sterge_random(std::vector<Nod*> listaNoduri) {
 	g.close();
 }
 
+void Arbore_AVL::balansare_insert(Nod * parinteNodSters) {
+
+}
+
 void Arbore_AVL::insert_repair(Nod* element) {
 
 	Nod * x = this->root;
@@ -1572,6 +1580,63 @@ void Arbore_AVL::insert_repair(Nod* element) {
 	this->size++;
 }
 
+void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
+
+	parinteNodSters->setHeight(f_getHeight(parinteNodSters));
+	parinteNodSters->setFactor(balans_factor(parinteNodSters));
+
+	std::cout << "Incepem rebalansarea de la " << parinteNodSters->info << ".\n";
+	Nod * sus = parinteNodSters; //nu e ->parent pentru ca parinteNodSters->parent ar fi null daca daca parintele nodului sters ar fi radacaina
+
+	while (sus) {
+		std::cout << "Am urcat mai sus la " << sus->info << ".\n";
+		sus->setHeight(f_getHeight(sus));
+		sus->setFactor(balans_factor(sus));
+
+		if (sus->factor == -2)
+		{
+			std::cout << "Rotatie spre dreapta in jurul parintelui " << sus->info << ".\n";
+			if (sus->left->getFactor() == 1) { //sa vad daca trebuie sa repar cotul
+
+				rotate_left(sus->left->info);
+				rotate_right(sus->info);
+
+				break;
+			}
+			if (sus->left->getFactor() == -1) { //inseamna ca toate cele 3 noduri sunt in linie
+				//inseamna ca trebuie o rotatie la dreapta in jurul, se face doar o rotatie spre dreapta
+				rotate_right(sus->info);
+				break;
+			}
+
+		}
+
+		if (sus->factor == 2)
+		{
+			std::cout << "Rotatie spre stanga in jurul parintelui " << sus->info << ".\n";
+			if (sus->right->getFactor() == -1) { //sa vad daca trebuie sa repar cotul
+
+				rotate_right(sus->right->info);
+				rotate_left(sus->info);
+
+				break;
+			}
+			if (sus->right->getFactor() == 1) { //inseamna ca toate cele 3 noduri sunt in linie
+				rotate_left(sus->info);
+				break;
+			}
+		}
+
+		if (sus->getFactor() == 1 || sus->getFactor() == -1) { //arbore dezechilibrat pe o parte
+			std::cout << "Ne-am oprit la " << sus->info << " cu factorul " << sus->getFactor() << ".\n";
+			break;
+		}
+
+		sus = sus->parent;
+	}
+
+}
+
 bool Arbore_AVL::delete_repair(Nod* node) {
 	std::cout << "NEW METHOD\n";
 
@@ -1580,15 +1645,15 @@ bool Arbore_AVL::delete_repair(Nod* node) {
 		return false;
 	}
 
-	bool frunzaLeft = false;
-	bool frunzaRight = false;
-	bool frunzaRadacina = false;
-
-	Nod * parinteNodSters = nullptr;
-
 	//CAZ 1 = z este frunza
 	//daca e frunza, putem sterge direct dupa ce aflam pe ce parte a parintelui este
 	{
+		bool frunzaLeft = false;
+		bool frunzaRight = false;
+		bool frunzaRadacina = false;
+
+		Nod * parinteNodSters = nullptr;
+
 		if (node->isLeaf()) {
 			imp("frunza");
 			if (node->parent) {
@@ -1620,98 +1685,82 @@ bool Arbore_AVL::delete_repair(Nod* node) {
 
 			}
 		}
-	}
 
-	if (frunzaLeft) {
-		std::cout << "Nodul a fost sters de pe partea stanga a parintelui.\n";
-		std::cout << "Incepem rebalansarea de la " << parinteNodSters->info << ".\n";
-		parinteNodSters->setHeight(f_getHeight(parinteNodSters));
-		parinteNodSters->setFactor(balans_factor(parinteNodSters));
-
-		if (parinteNodSters->getFactor() == 2) {
-			if (parinteNodSters->right->getFactor() == -1) {
-				rotate_right(parinteNodSters->right->info);
-				rotate_left(parinteNodSters->info);
-			}
+		if (frunzaLeft) {
+			std::cout << "Nodul a fost sters de pe partea stanga a parintelui.\n";
+			balansare_delete(parinteNodSters);
 		}
 
-		Nod * sus = parinteNodSters->parent;
-
-		while (sus->parent) {
-			std::cout << "Am urcat mai sus la " << sus->info << ".\n";
-			sus->setHeight(f_getHeight(sus));
-			sus->setFactor(balans_factor(sus));
-
-			if (sus->getFactor() == 1 || sus->getFactor() == -1) { //arbore dezechilibrat pe o parte
-				std::cout << "Ne-am oprit la " << sus->info << " cu factorul " << sus->getFactor() << ".\n";
-				break;
-			}
-
-			sus = sus->parent;
-		}
-	}
-
-	if (frunzaRight) {
-		std::cout << "Nodul a fost sters de pe partea dreapta a parintelui.\n";
-		std::cout << "Incepem rebalansarea de la " << parinteNodSters->info << ".\n";
-		parinteNodSters->setHeight(f_getHeight(parinteNodSters));
-		parinteNodSters->setFactor(balans_factor(parinteNodSters));
-
-		if (parinteNodSters->getFactor() == -2) {
-			if (parinteNodSters->left->getFactor() == 1) {
-				rotate_left(parinteNodSters->left->info);
-				rotate_right(parinteNodSters->info);
-			}
+		if (frunzaRight) {
+			std::cout << "Nodul a fost sters de pe partea dreapta a parintelui.\n";
+			balansare_delete(parinteNodSters);
 		}
 
-		Nod * sus = parinteNodSters->parent;
-
-		while (sus->parent) {
-			std::cout << "Am urcat mai sus la " << sus->info << ".\n";
-			sus->setHeight(f_getHeight(sus));
-			sus->setFactor(balans_factor(sus));
-
-			if (sus->getFactor() == 1 || sus->getFactor() == -1) { //arbore dezechilibrat pe o parte
-				std::cout << "Ne-am oprit la " << sus->info << " cu factorul " << sus->getFactor() << ".\n";
-				break;
-			}
-
-			sus = sus->parent;
+		if (frunzaRadacina) {
+			std::cout << "Nodul sters era o radacina frunza (singurul nod din arbore).\n";
 		}
-	}
 
-	if (frunzaRadacina) {
-		std::cout << "Nodul sters era o radacina frunza (singurul nod din arbore).\n";
 	}
 
 	//CAZ 2 = z are un singur fiu nenul
 	//daca nu e frunza si are 1 fiu
 	{
+		bool fromTheLeft = false; //daca nodul pe care il stergem vine de pe partea stanga
+		bool fromTheRight = false; //daca nodul pe care il stergem vine de pe partea dreapta
+
+		Nod * parinteNodSters = nullptr;
+
 		if (node->hasOneSon()) {
 			imp("1 fiu");
 			if (node->left == nullptr) {
+
+				parinteNodSters = node->parent;
+				fromTheLeft = true;
+
 				transplant(node, node->right);
 
 				this->size--;
 
 			}
 			if (node->right == nullptr) {
+
+				parinteNodSters = node->parent;
+				fromTheRight = true;
+
 				transplant(node, node->left);
 
 				this->size--;
 
 			}
 		}
+
+		if (fromTheLeft) {
+			std::cout << "Nodul a fost sters de pe partea stanga a parintelui.\n";
+			balansare_delete(parinteNodSters);
+		}
+
+		if (fromTheRight) {
+			std::cout << "Nodul a fost sters de pe partea dreapta a parintelui.\n";
+			balansare_delete(parinteNodSters);
+		}
 	}
 
 	//CAZ 3 = z are ambii fii nenuli
 	//daca nu e frunza si are 2 fii, cautam succesorul, facem transplant si refacem legaturile
 	{
+		bool descendentDirect = false;
+
+		Nod * parinteNodSters = nullptr;
+
 		if (node->hasTwoSons()) {
 			imp("2 fii");
 
 			Nod * y = this->succesor(node->info);
 			if (y == node->right) { //succesorul este descendentul direct
+
+				descendentDirect = true;
+				parinteNodSters = node->right;
+
 				transplant(node, y);
 				this->size--;
 
@@ -1724,9 +1773,19 @@ bool Arbore_AVL::delete_repair(Nod* node) {
 
 				transplant(node, y);
 
+				parinteNodSters = y;
+
 				this->size--;
 
 			}
+		}
+
+		if(descendentDirect) {
+			std::cout << "Nodul sters are descendent direct ca succesor.\n";
+			balansare_delete(parinteNodSters);
+		} else {
+			std::cout << "Nodul sters NU are descendent direct ca succesor.\n";
+			balansare_delete(parinteNodSters);
 		}
 	}
 }
