@@ -239,6 +239,9 @@ public:
 					std::cout << " ";
 				else {
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+					//std::cout << previousLevelNodes[index].node->h_left;		
+					//std::cout << "-";
+					//std::cout << previousLevelNodes[index].node->h_right;
 					std::cout << previousLevelNodes[index].node->getHeight();
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 					if (previousLevelNodes[index].node->getHeight() < 0)
@@ -597,7 +600,7 @@ void Arbore_AVL::inaltime(Nod * root) {
 
 }
 
-
+/*
 int balans_factor(Nod * temp) {
 
 	//std::cout << "Factor de balansare pt. nodul " << temp->info << " ";
@@ -635,6 +638,7 @@ int balans_factor(Nod * temp) {
 	return factor;
 
 }
+*/
 
 int f_getHeight(Nod * root) {
 
@@ -1325,6 +1329,10 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 	std::cout << "Incepem rebalansarea de la " << parinteNodSters->info << ".\n";
 	Nod * sus = parinteNodSters; //nu e ->parent pentru ca parinteNodSters->parent ar fi null daca daca parintele nodului sters ar fi radacaina
 
+	this->print(6);
+
+	Nod * radacina = nullptr;
+
 	while (sus) {
 		std::cout << "Am urcat mai sus la " << sus->info << ".\n";
 		sus->setHeight(f_getHeight(sus));
@@ -1380,7 +1388,14 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 			}
 		}
 
+		radacina = sus;
 		sus = sus->parent;
+
+		if (sus == nullptr) {
+			std::cout << "Am ajuns cu rebalansarea pana la radacina";
+			radacina->setHeight(f_getHeight(radacina));
+			radacina->setFactor(balans_factor_nou(radacina));
+		}
 	}
 
 	parinteNodSters->setHeight(f_getHeight(parinteNodSters));
