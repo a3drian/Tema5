@@ -501,7 +501,7 @@ void Arbore_AVL::rotate_left(int key) {
 	}
 }
 
-void Arbore_AVL::merge(Arbore_AVL copac){
+void Arbore_AVL::merge(Arbore_AVL copac) {
 	Nod * maxim = copac.maxim(copac.root);
 }
 
@@ -597,35 +597,6 @@ void Arbore_AVL::inaltime(Nod * root) {
 
 }
 
-void Arbore_AVL::adancime(Nod * root) {
-
-	std::queue<Nod*> q_nodes;
-
-	int depth = 0;
-	Nod * start = root;
-	start->setDepth(depth);
-
-	q_nodes.push(start);
-
-	while (!q_nodes.empty()) {
-		int size = q_nodes.size();
-
-		while (size--) {
-			Nod * temp = q_nodes.front();
-			q_nodes.pop();
-			if (temp->left) {
-				temp->left->setDepth(temp->getDepth() + 1);
-				q_nodes.push(temp->left);
-			}
-			if (temp->right) {
-				temp->right->setDepth(temp->getDepth() + 1);
-				q_nodes.push(temp->right);
-			}
-			depth++;
-		}
-	}
-
-}
 
 int balans_factor(Nod * temp) {
 
@@ -643,6 +614,17 @@ int balans_factor(Nod * temp) {
 		//std::cout << temp->getHeight() << " - [0]" << ".\n";
 		factor = temp->getHeight() - 0;
 
+	} else if (temp->left != nullptr && temp->left->getHeight() == 0) {
+
+		//std::cout << temp->getHeight() << " - [0]" << ".\n";
+		std::cout << "CAZ NOU.\n";
+		factor = temp->getHeight() - 1;
+
+	} else if (temp->right != nullptr && temp->right->getHeight() == 0) {
+
+		//std::cout << "[0] - " << temp->getHeight() << ".\n";
+		std::cout << "CAZ NOU.\n";
+		factor = 1 - temp->getHeight();
 	} else {
 
 		//std::cout << temp->right->getHeight() << " - " << temp->left->getHeight() << ".\n";
@@ -689,6 +671,119 @@ int f_getHeight(Nod * root) {
 		}
 	}
 	return (height - 1);
+}
+
+int f_getHeight_left(Nod * root) {
+
+	std::queue<Nod *> q;
+	int height = 0;
+
+	// add root to the queue
+	q.push(root);
+
+	// add null as marker
+	q.push(nullptr);
+
+	while (!q.empty()) {
+		Nod * n = q.front();
+		q.pop();
+		// check if n is null, if yes, we have reached to the end of the
+		// current level, increment the height by 1, and add the another
+		// null as marker for next level
+		if (n == nullptr) {
+			// before adding null, check if queue is empty, which means we
+			// have traveled all the levels
+			if (!q.empty()) {
+				q.push(nullptr);
+			}
+			height++;
+		} else {
+			// else add the children of extracted node.
+			if (n == root) {
+				if (n->left != nullptr) {
+					q.push(n->left);
+				}
+			} else {
+				if (n->left != nullptr) {
+					q.push(n->left);
+				}
+				if (n->right != nullptr) {
+					q.push(n->right);
+				}
+			}
+			
+		}
+	}
+	return (height - 1);
+}
+
+int f_getHeight_right(Nod * root) {
+
+	std::queue<Nod *> q;
+	int height = 0;
+
+	// add root to the queue
+	q.push(root);
+
+	// add null as marker
+	q.push(nullptr);
+
+	while (!q.empty()) {
+		Nod * n = q.front();
+		q.pop();
+		// check if n is null, if yes, we have reached to the end of the
+		// current level, increment the height by 1, and add the another
+		// null as marker for next level
+		if (n == nullptr) {
+			// before adding null, check if queue is empty, which means we
+			// have traveled all the levels
+			if (!q.empty()) {
+				q.push(nullptr);
+			}
+			height++;
+		} else {
+			// else add the children of extracted node.
+			if (n == root) {
+				if (n->right != nullptr) {
+					q.push(n->right);
+				}
+			} else {
+				if (n->left != nullptr) {
+					q.push(n->left);
+				}
+				if (n->right != nullptr) {
+					q.push(n->right);
+				}
+			}
+		}
+	}
+	return (height - 1);
+}
+
+int balans_factor_nou(Nod * temp) {
+
+	imp(temp->info);
+	if (temp->parent) {	
+		std::cout << "Factor de balansare pt. nodul " << temp->info << " (" << temp->parent->info << ").\n";
+	} else {
+		std::cout << "Factor de balansare pt. nodul " << temp->info << ".\n";
+	}
+
+	temp->h_left = f_getHeight_left(temp);
+	//temp->h_left = f_getHeight(temp->left);
+	std::cout << "Inaltimea pe stanga este: " << temp->h_left << ".\n";
+
+	temp->h_right = f_getHeight_right(temp);
+	//temp->h_right = f_getHeight(temp->right);
+	std::cout << "Inaltimea pe dreapta este: " << temp->h_right << ".\n";
+
+	int factor = 0;
+
+	factor = temp->h_right - temp->h_left;
+	std::cout << "Factor de balansare pt. nodul " << temp->info << " este " << factor << ".\n";
+	imp(temp->info);
+
+	return factor;
 }
 
 void Arbore_AVL::factor(Nod * root) {
@@ -1093,7 +1188,8 @@ void Arbore_AVL::insert_repair(Nod * element) {
 	int f_before, f_after;
 	f_before = parinteNodInserat->getFactor();
 	//std::cout << "Factor before pentru: " << parinteNodInserat->info << ", " << f_before << " ";
-	parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+	//parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+	parinteNodInserat->setFactor(balans_factor_nou(parinteNodInserat));
 	f_after = parinteNodInserat->getFactor();
 	//std::cout << "Factor after pentru: " << parinteNodInserat->info << ", " << f_after;
 
@@ -1116,7 +1212,8 @@ void Arbore_AVL::insert_repair(Nod * element) {
 		std::cout << "\n";
 
 		//std::cout << "Factor before pentru: " << sus->info << ", " << sus->getFactor() << " ";
-		sus->setFactor(balans_factor(sus));
+		sus->setFactor(balans_factor_nou(sus));
+		//sus->setFactor(balans_factor(sus));
 		f_after = sus->getFactor();
 		//std::cout << "Factor after pentru: " << sus->info << ", " << f_after << ".\n";
 
@@ -1178,30 +1275,36 @@ void Arbore_AVL::insert_repair(Nod * element) {
 
 		//std::cout << "Factor sus:\t";
 		sus->setHeight(f_getHeight(sus));
-		sus->setFactor(balans_factor(sus));
+		//sus->setFactor(balans_factor(sus));
+		sus->setFactor(balans_factor_nou(sus));
 
 		//std::cout << "Factor parinte:\t";
 		parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
-		parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+		//parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+		parinteNodInserat->setFactor(balans_factor_nou(parinteNodInserat));
 
 		//std::cout << "Factor nod:\t";
 		nodulInserat->setHeight(f_getHeight(nodulInserat));
-		nodulInserat->setFactor(balans_factor(nodulInserat));
+		//nodulInserat->setFactor(balans_factor(nodulInserat));
+		nodulInserat->setFactor(balans_factor_nou(nodulInserat));
 
 	} else {
 		//std::cout << "FINAL fara cot:\n"; //nodul inserat ramane copil
 
 		//std::cout << "Factor sus:\t";
 		sus->setHeight(f_getHeight(sus));
-		sus->setFactor(balans_factor(sus));
+		//sus->setFactor(balans_factor(sus));
+		sus->setFactor(balans_factor_nou(sus));
 
 		//std::cout << "Factor nod:\t";
 		nodulInserat->setHeight(f_getHeight(nodulInserat));
-		nodulInserat->setFactor(balans_factor(nodulInserat));
+		//nodulInserat->setFactor(balans_factor(nodulInserat));
+		nodulInserat->setFactor(balans_factor_nou(nodulInserat));
 
 		//std::cout << "Factor parinte:\t";
 		parinteNodInserat->setHeight(f_getHeight(parinteNodInserat));
-		parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+		//parinteNodInserat->setFactor(balans_factor(parinteNodInserat));
+		parinteNodInserat->setFactor(balans_factor_nou(parinteNodInserat));
 	}
 
 	this->size++;
@@ -1216,7 +1319,8 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 	this->print(6);
 
 	parinteNodSters->setHeight(f_getHeight(parinteNodSters));
-	parinteNodSters->setFactor(balans_factor(parinteNodSters));
+	//parinteNodSters->setFactor(balans_factor(parinteNodSters));
+	parinteNodSters->setFactor(balans_factor_nou(parinteNodSters));
 
 	std::cout << "Incepem rebalansarea de la " << parinteNodSters->info << ".\n";
 	Nod * sus = parinteNodSters; //nu e ->parent pentru ca parinteNodSters->parent ar fi null daca daca parintele nodului sters ar fi radacaina
@@ -1224,7 +1328,8 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 	while (sus) {
 		std::cout << "Am urcat mai sus la " << sus->info << ".\n";
 		sus->setHeight(f_getHeight(sus));
-		sus->setFactor(balans_factor(sus));
+		//sus->setFactor(balans_factor(sus));
+		sus->setFactor(balans_factor_nou(sus));
 
 		if (sus->getFactor() == 1 || sus->getFactor() == -1) { //arbore dezechilibrat pe o parte
 			std::cout << "Ne-am oprit la " << sus->info << " cu factorul " << sus->getFactor() << ".\n";
@@ -1238,6 +1343,8 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 
 				rotate_left(sus->left->info);
 				rotate_right(sus->info);
+
+				this->print(6);
 
 				break;
 			}
@@ -1277,7 +1384,8 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 	}
 
 	parinteNodSters->setHeight(f_getHeight(parinteNodSters));
-	parinteNodSters->setFactor(balans_factor(parinteNodSters));
+	parinteNodSters->setFactor(balans_factor_nou(parinteNodSters));
+	//parinteNodSters->setFactor(balans_factor(parinteNodSters));
 }
 
 bool Arbore_AVL::delete_repair(Nod* node) {
