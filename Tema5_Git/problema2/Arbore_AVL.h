@@ -516,6 +516,10 @@ void Arbore_AVL::rotate_right(int key) {
 
 	} else {
 
+		if (x->left == nullptr) {
+			throw;
+		}
+
 		Nod * y = x->left;
 		x->left = y->right;
 
@@ -715,7 +719,7 @@ int f_getHeight_left(Nod * root) {
 					q.push(n->right);
 				}
 			}
-			
+
 		}
 	}
 	return (height - 1);
@@ -767,7 +771,7 @@ int f_getHeight_right(Nod * root) {
 int balans_factor_nou(Nod * temp) {
 
 	imp(temp->info);
-	if (temp->parent) {	
+	if (temp->parent) {
 		std::cout << "Factor de balansare pt. nodul " << temp->info << " (" << temp->parent->info << ").\n";
 	} else {
 		std::cout << "Factor de balansare pt. nodul " << temp->info << ".\n";
@@ -1350,7 +1354,13 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 			if (sus->left->getFactor() == 1) { //sa vad daca trebuie sa repar cotul
 
 				rotate_left(sus->left->info);
-				rotate_right(sus->info);
+				try {
+					rotate_right(sus->info);
+				}
+				catch (...) {
+					std::cout << "Pointer null in rotate_right\n";
+					return;
+				}
 
 				this->print(6);
 
@@ -1373,7 +1383,13 @@ void Arbore_AVL::balansare_delete(Nod * parinteNodSters) {
 			std::cout << "Rotatie spre stanga in jurul parintelui " << sus->info << ".\n";
 			if (sus->right->getFactor() == -1) { //sa vad daca trebuie sa repar cotul
 
-				rotate_right(sus->right->info);
+				try {
+					rotate_right(sus->right->info);
+				}
+				catch (...) {
+					std::cout << "Pointer null in rotate_right\n";
+					return;
+				}
 				rotate_left(sus->info);
 
 				break;
