@@ -47,8 +47,10 @@ int main() {
 		switch (comanda) {
 			case 1:
 				{
-					logn("1. Cauta");
-					cauta(copac);
+					//logn("1. Cauta");
+					//cauta(copac);
+					logn("1. AFISEAZA BALANS");
+					afiseaza_balans(copac);
 					sout;
 					break;
 				}
@@ -101,7 +103,12 @@ int main() {
 				{
 					logn("8. Printeaza");
 
-					copac.print(6);
+					//copac.print(6);
+
+					copac.print(1); //preordine
+					copac.print(2); //inordine
+					copac.print(3); //postordine		
+					copac.print(4); //level-order
 					//copac.dump();
 
 					sout;
@@ -119,7 +126,7 @@ int main() {
 						listaNoduri[i]->setHeight(f_getHeight(listaNoduri[i]));
 					}
 					for (int i = 0; i < cateNoduri; i++) {
-						listaNoduri[i]->setFactor(balans_factor(listaNoduri[i]));
+						listaNoduri[i]->setFactor(balans_factor_nou(listaNoduri[i]));
 					}
 
 					//copac.inaltime(copac.root);
@@ -161,6 +168,37 @@ int main() {
 				}
 		}
 	}
+
+	Arbore_AVL copy = Arbore_AVL();
+
+	std::queue<Nod *> c;
+
+	c.push(copac.root);
+	Nod * y = new Nod(copac.root->info);
+	copy.root = y;
+
+	while (!c.empty()) {
+		std::cout << c.front()->info << " ";
+
+		Nod * aux = c.front();
+		y = new Nod(aux->info);
+
+		c.pop();
+
+		if (aux->left) {
+			Nod * x = new Nod(aux->left->info);
+			y->left = x;
+			c.push(aux->left);
+		}
+		if (aux->right) {
+			Nod * x = new Nod(aux->right->info);
+			y->right = x;
+			c.push(aux->right);
+		}
+
+	}
+
+	copy.printLevelByLevel(copy.root);
 
 	file.close();
 
