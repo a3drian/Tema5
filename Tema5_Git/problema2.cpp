@@ -1,6 +1,49 @@
 #include "problema2/Arbore_AVL.h"
 #include "problema2/Utils.h"
 
+Nod * clone(Nod * root) {
+	if (root == NULL) {
+		return root;
+	}
+
+	//create new node and make it a copy of node pointed by root
+	Nod *temp = new Nod(root->info);
+	temp->left = clone(root->left);    //cloning left child
+	temp->right = clone(root->right);  //cloning right child
+	return temp;
+}
+
+Nod * copy(const Arbore_AVL &copac){
+
+	std::queue<Nod *> c;
+
+	c.push(copac.root);
+	Nod * y = new Nod(copac.root->info);
+
+	while (!c.empty()) {
+		std::cout << c.front()->info << " ";
+
+		Nod * aux = c.front();
+		//y = new Nod(aux->info);
+
+		c.pop();
+
+		if (aux->left) {
+			Nod * x = new Nod(aux->left->info);
+			y->left = x;
+			c.push(aux->left);
+		}
+		if (aux->right) {
+			Nod * x = new Nod(aux->right->info);
+			y->right = x;
+			c.push(aux->right);
+		}
+
+	}
+
+	return y;
+}
+
 int main() {
 	srand(time(NULL));
 	std::ofstream file("problema2/output.in");
@@ -169,36 +212,19 @@ int main() {
 		}
 	}
 
-	Arbore_AVL copy = Arbore_AVL();
 
-	std::queue<Nod *> c;
 
-	c.push(copac.root);
-	Nod * y = new Nod(copac.root->info);
-	copy.root = y;
+	Arbore_AVL duplicate = Arbore_AVL();
 
-	while (!c.empty()) {
-		std::cout << c.front()->info << " ";
+	duplicate.printLevelByLevel(duplicate.root);
 
-		Nod * aux = c.front();
-		y = new Nod(aux->info);
+	duplicate.root = clone(copac.root);
 
-		c.pop();
+	duplicate.printLevelByLevel(duplicate.root);
 
-		if (aux->left) {
-			Nod * x = new Nod(aux->left->info);
-			y->left = x;
-			c.push(aux->left);
-		}
-		if (aux->right) {
-			Nod * x = new Nod(aux->right->info);
-			y->right = x;
-			c.push(aux->right);
-		}
+	duplicate.root = copy(copac);
 
-	}
-
-	copy.printLevelByLevel(copy.root);
+	duplicate.printLevelByLevel(duplicate.root);
 
 	file.close();
 
