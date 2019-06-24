@@ -2,7 +2,7 @@
 #include "problema2/Utils.h"
 
 Nod * clone(Nod * root) {
-	if (root == NULL) {
+	if (root == nullptr) {
 		return root;
 	}
 
